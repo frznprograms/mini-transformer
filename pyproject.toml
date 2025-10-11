@@ -1,0 +1,12 @@
+[project]
+name = "mini-transformer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "loguru>=0.7.3",
+    "matplotlib>=3.10.7",
+    "pandas>=2.3.3",
+    "torch>=2.8.0",
+]
