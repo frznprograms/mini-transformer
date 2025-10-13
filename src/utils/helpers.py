@@ -56,3 +56,8 @@ def set_seeds(seed_num: Optional[int], deterministic: bool = True) -> int:
         torch.backends.cudnn.benchmark = False
 
     return seed_num
+
+
+@logger.catch(message="Unable to create causal masking.", reraise=True)
+def causal_mask(dim: int):
+    return torch.tril(torch.ones(dim, dim))
