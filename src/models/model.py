@@ -83,9 +83,11 @@ class MiniTransformer(nn.Module):
         self.final_norm = nn.LayerNorm(d_model)
         self.out_layer = nn.Linear(d_model, vocab_size)
 
+        self._init_weights()
+
     def forward(self, x) -> torch.Tensor:
         B, T = x.shape
-        positions = torch.arange(T).unsqueeze(0)  # to match batch size
+        positions = torch.arange(T, device=x.device).unsqueeze(0)  # to match batch size
         x = self.token_emb(x) + self.pos_emb(positions)
 
         for block in self.blocks:
@@ -95,3 +97,10 @@ class MiniTransformer(nn.Module):
         logits = self.out_layer(x)
 
         return logits
+
+    def _init_weights(self):
+        for name, param in self.named_parameters():
+            if param.dim() > 1:  # only for non-bias weights
+                nn.init.kaiming_normal_(param, nonlinearity="relu")
+            else:
+                nn.init.zeros_(param)
