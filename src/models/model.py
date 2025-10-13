@@ -35,3 +35,25 @@ class SelfAttention(nn.Module):
         output = output.transpose(1, 2).contiguous().view(B, T, D)
 
         return self.Wo(output)
+
+
+class TransformerBlock(nn.Module):
+    def __init__(self, d_model, n_heads, d_ff):
+        super().__init__()
+        self.attn = SelfAttention(d_model=d_model, n_heads=n_heads)
+        self.norm1 = nn.LayerNorm(d_model)
+        self.ff = nn.Sequential(
+            nn.Linear(d_model, d_ff), nn.ReLU(), nn.Linear(d_ff, d_model)
+        )
+        self.norm2 = nn.LayerNorm(d_model)
+
+    def forward(self, x):
+        # attention, residual connection, layernorm
+        attn_output = self.attn(x)
+        x = self.norm1(x + attn_output)
+
+        # feedforward network, residual connection, layernorm
+        ff_output = self.ff(x)
+        x = self.norm2(x + ff_output)
+
+        return x
