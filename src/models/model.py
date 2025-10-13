@@ -6,7 +6,7 @@ from src.utils.helpers import causal_mask
 
 
 class SelfAttention(nn.Module):
-    def __init__(self, d_model, n_heads):
+    def __init__(self, d_model: int, n_heads: int):
         super().__init__()
         assert (
             d_model % n_heads == 0
@@ -27,7 +27,7 @@ class SelfAttention(nn.Module):
 
         attn_scores = (q @ k.transpose(-2, -1)) / (self.d_k**0.5)
 
-        mask = causal_mask(T)
+        mask = causal_mask(T).unsqueeze(0).unsqueeze(0)
         attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
         attn = F.softmax(attn_scores, dim=-1)
 
@@ -38,7 +38,7 @@ class SelfAttention(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    def __init__(self, d_model, n_heads, d_ff):
+    def __init__(self, d_model: int, n_heads: int, d_ff: int):
         super().__init__()
         self.attn = SelfAttention(d_model=d_model, n_heads=n_heads)
         self.norm1 = nn.LayerNorm(d_model)
@@ -47,7 +47,7 @@ class TransformerBlock(nn.Module):
         )
         self.norm2 = nn.LayerNorm(d_model)
 
-    def forward(self, x):
+    def forward(self, x) -> torch.Tensor:
         # attention, residual connection, layernorm
         attn_output = self.attn(x)
         x = self.norm1(x + attn_output)
@@ -57,3 +57,41 @@ class TransformerBlock(nn.Module):
         x = self.norm2(x + ff_output)
 
         return x
+
+
+class MiniTransformer(nn.Module):
+    def __init__(
+        self,
+        vocab_size: int,
+        d_model: int = 128,
+        n_heads: int = 4,
+        d_ff: int = 256,
+        n_layers: int = 2,
+        max_len: int = 256,
+    ):
+        super().__init__()
+        self.token_emb = nn.Embedding(vocab_size, d_model)
+        self.pos_emb = nn.Embedding(max_len, d_model)
+
+        self.blocks = nn.ModuleList(
+            [
+                TransformerBlock(d_model=d_model, n_heads=n_heads, d_ff=d_ff)
+                for i in range(n_layers)
+            ]
+        )
+
+        self.final_norm = nn.LayerNorm(d_model)
+        self.out_layer = nn.Linear(d_model, vocab_size)
+
+    def forward(self, x) -> torch.Tensor:
+        B, T = x.shape
+        positions = torch.arange(T).unsqueeze(0)  # to match batch size
+        x = self.token_emb(x) + self.pos_emb(positions)
+
+        for block in self.blocks:
+            x = block(x)
+
+        x = self.final_norm(x)
+        logits = self.out_layer(x)
+
+        return logits
