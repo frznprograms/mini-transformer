@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from src.utils.helpers import causal_mask
+
 
 class SelfAttention(nn.Module):
     def __init__(self, d_model, n_heads):
@@ -17,15 +19,16 @@ class SelfAttention(nn.Module):
         self.WV = nn.Linear(d_model, d_model)
         self.Wo = nn.Linear(d_model, d_model)
 
-    def forward(self, x, mask=None) -> torch.Tensor:
+    def forward(self, x) -> torch.Tensor:
         B, T, D = x.size()
         q = self.WQ(x).view(B, T, self.n_heads, self.d_k).transpose(1, 2)
         k = self.WK(x).view(B, T, self.n_heads, self.d_k).transpose(1, 2)
         v = self.WV(x).view(B, T, self.n_heads, self.d_k).transpose(1, 2)
 
         attn_scores = (q @ k.transpose(-2, -1)) / (self.d_k**0.5)
-        if mask is not None:
-            attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
+
+        mask = causal_mask(T)
+        attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
         attn = F.softmax(attn_scores, dim=-1)
 
         output = attn @ v
