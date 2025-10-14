@@ -62,13 +62,14 @@ class TransformerBlock(nn.Module):
 class MiniTransformer(nn.Module):
     def __init__(
         self,
-        vocab_size: int,
+        vocab_size: int = 27,
         d_model: int = 64,
         n_heads: int = 4,
         d_ff: int = 128,
         n_layers: int = 2,
-        max_len: int = 256,
+        max_len: int = 32,
     ):
+        # TODO: check if shapes of embeddings will be a problem for model in forward()
         super().__init__()
         self.token_emb = nn.Embedding(vocab_size, d_model)
         self.pos_emb = nn.Embedding(max_len, d_model)
