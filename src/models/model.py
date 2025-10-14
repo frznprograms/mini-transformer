@@ -27,7 +27,7 @@ class SelfAttention(nn.Module):
 
         attn_scores = (q @ k.transpose(-2, -1)) / (self.d_k**0.5)
 
-        mask = causal_mask(T).unsqueeze(0).unsqueeze(0)
+        mask = causal_mask(T).unsqueeze(0).unsqueeze(0)  # (1, 1, T, T)
         attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
         attn = F.softmax(attn_scores, dim=-1)
 
@@ -63,9 +63,9 @@ class MiniTransformer(nn.Module):
     def __init__(
         self,
         vocab_size: int,
-        d_model: int = 128,
+        d_model: int = 64,
         n_heads: int = 4,
-        d_ff: int = 256,
+        d_ff: int = 128,
         n_layers: int = 2,
         max_len: int = 256,
     ):
@@ -100,7 +100,7 @@ class MiniTransformer(nn.Module):
 
     def _init_weights(self):
         for name, param in self.named_parameters():
-            if param.dim() > 1:  # only for non-bias weights
+            if param.dim() > 1:
                 nn.init.kaiming_normal_(param, nonlinearity="relu")
             else:
                 nn.init.zeros_(param)
