@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
 from loguru import logger
-
+from torch.utils.data import Dataset, DataLoader
 import yaml
 
 
@@ -37,11 +37,29 @@ class ModelTrainer:
             "Model, Optimizer, Loss, and Configurations loaded successfully."
         )
 
-    def train(self):
+    def train(self, dataset: Dataset):
         # set model to training mode
         self.model.train()
-        epochs = self.train_configs["epochs"]
+        num_epochs = self.train_configs["epochs"]
+        batch_size = self.train_configs["batch_size"]
 
         logger.info("Starting Training...")
-        for epoch in range(epochs):
-            pass
+        for epoch in range(num_epochs):
+            total_loss = 0.0
+
+            for x, y in DataLoader(dataset, batch_size=batch_size, shuffle=True):
+                x, y = x.to(self.device), y.to(self.device)
+
+                # forward
+                logits = self.model(x)
+                B, T, C = logits.shape
+
+                loss = self.criterion(logits.view(B * T, C), y.view(B * T))
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_loss = total_loss / len(dataset)
+            logger.info(f"Epoch: {epoch} | Cross-Entropy Loss: {avg_loss}")
