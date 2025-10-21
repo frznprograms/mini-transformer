@@ -19,10 +19,9 @@ class CharDataset(Dataset):
         return len(self.encoded) - self.context_size
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        # create y as X that has been offset by 1, each window non-overlapping
-        start = idx * self.context_size
-        X = self.encoded[start : start + self.context_size]
-        y = self.encoded[start + 1 : start + 1 + self.context_size]
+        # create y as X that has been offset by 1
+        X = self.encoded[idx : idx + self.context_size]
+        y = self.encoded[idx + 1 : idx + 1 + self.context_size]
 
         return X, y
 

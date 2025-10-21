@@ -5,39 +5,33 @@ from loguru import logger
 
 
 def set_device(device_type: str = "auto") -> str:
-    device = None
     if device_type == "auto":
         if torch.cuda.is_available():
-            device = "cuda"
-        elif torch.mps.is_available():
-            device = "mps"
+            return "cuda"
+        elif torch.backends.mps.is_available():
+            return "mps"
         else:
-            device = "cpu"
+            return "cpu"
+
+    elif device_type == "cuda":
+        if torch.cuda.is_available():
+            return "cuda"
+        else:
+            logger.warning("CUDA not available, defaulting to CPU.")
+            return "cpu"
+
+    elif device_type == "mps":
+        if torch.backends.mps.is_available():
+            return "mps"
+        else:
+            logger.warning("MPS not available, defaulting to CPU.")
+            return "cpu"
+
+    elif device_type == "cpu":
+        return "cpu"
 
     else:
-        if device_type == "cuda":
-            if torch.cuda.is_available():
-                device = "cuda"
-            else:
-                logger.warning(
-                    f"Could not set device to {device_type}, defaulting to cpu instead."
-                )
-                device = "cpu"
-        if device_type == "mps":
-            if torch.mps.is_available():
-                device = "mps"
-            else:
-                logger.warning(
-                    f"Could not set device to {device_type}, defaulting to cpu instead."
-                )
-                device = "cpu"
-        else:
-            device = "cpu"
-
-    if device is None:
-        raise ValueError(f"Could not assign device of type {device_type}")
-
-    return device
+        raise ValueError(f"Unrecognized device type: {device_type}")
 
 
 @logger.catch(message="Unable to set seed for this run/experiment.", reraise=True)
