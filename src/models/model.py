@@ -69,7 +69,6 @@ class MiniTransformer(nn.Module):
         n_layers: int = 2,
         max_len: int = 32,
     ):
-        # TODO: check if shapes of embeddings will be a problem for model in forward()
         super().__init__()
         self.token_emb = nn.Embedding(vocab_size, d_model)
         self.pos_emb = nn.Embedding(max_len, d_model)

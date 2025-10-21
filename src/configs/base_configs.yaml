@@ -7,6 +7,9 @@ model:
   max_len: 128
 
 train:
+  experiment_name: "base_model"
   epochs: 3
   lr: 0.001
   batch_size: 4
+  save_strategy: "steps"
+  save_steps: 1000
