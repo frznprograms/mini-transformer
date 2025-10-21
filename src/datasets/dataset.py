@@ -1,6 +1,6 @@
-from torch.utils.data import Dataset
 import torch
 from loguru import logger
+from torch.utils.data import Dataset
 
 
 class CharDataset(Dataset):
