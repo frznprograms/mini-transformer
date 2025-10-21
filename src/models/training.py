@@ -1,13 +1,15 @@
+from dataclasses import dataclass
+
 import torch
 import torch.nn as nn
-
-from dataclasses import dataclass
-from src.models.model import MiniTransformer
-from src.datasets.dataset import CharDataset
-from src.utils.helpers import set_device
+import yaml
 from loguru import logger
 from torch.utils.data import DataLoader
-import yaml
+from tqdm.auto import tqdm
+
+from src.datasets.dataset import CharDataset
+from src.models.model import MiniTransformer
+from src.utils.helpers import set_device
 
 
 @dataclass
@@ -44,7 +46,11 @@ class ModelTrainer:
         num_epochs = self.train_configs["epochs"]
         batch_size = self.train_configs["batch_size"]
 
+        n = len(dataset)
+        num_steps = num_epochs * (n // batch_size)
+
         logger.info("Starting Training...")
+        pbar = tqdm(num_steps)
         for epoch in range(num_epochs):
             total_loss = 0.0
 
@@ -61,16 +67,28 @@ class ModelTrainer:
                 self.optimizer.step()
 
                 total_loss += loss.item()
+                pbar.update(1)
 
-            avg_loss = total_loss / len(dataset)
+            avg_loss = total_loss / n
             print(f"Epoch: {epoch} | Loss: {avg_loss:.4f}")
 
 
 if __name__ == "__main__":
+    # mt = ModelTrainer()
+    # print(f"Model Configs: {mt.model_configs}")
+    # print(f"Train Configs: {mt.train_configs}")
+    # print(f"Device: {mt.device}")
+    # print(f"Optimizer: {mt.optimizer}")
+    # print(f"Criterion/Loss Function: {mt.criterion}")
+    # print(f"Model: {mt.model}")
+
+    with open("data/text8", "r") as f:
+        full_text = f.read()
+
+    max_size = 1000
+    data = full_text[:max_size]
+
+    cd = CharDataset(text=data, context_size=10)
     mt = ModelTrainer()
-    print(f"Model Configs: {mt.model_configs}")
-    print(f"Train Configs: {mt.train_configs}")
-    print(f"Device: {mt.device}")
-    print(f"Optimizer: {mt.optimizer}")
-    print(f"Criterion/Loss Function: {mt.criterion}")
-    print(f"Model: {mt.model}")
+
+    mt.train(dataset=cd)
