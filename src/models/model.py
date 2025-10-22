@@ -6,7 +6,7 @@ from src.utils.helpers import causal_mask
 
 
 class SelfAttention(nn.Module):
-    def __init__(self, d_model: int, n_heads: int):
+    def __init__(self, d_model: int, n_heads: int, drop: float = 0.1):
         super().__init__()
         assert (
             d_model % n_heads == 0
@@ -18,6 +18,7 @@ class SelfAttention(nn.Module):
         self.WK = nn.Linear(d_model, d_model)
         self.WV = nn.Linear(d_model, d_model)
         self.Wo = nn.Linear(d_model, d_model)
+        self.dropout = nn.Dropout(p=drop)
 
     def forward(self, x) -> torch.Tensor:
         B, T, D = x.size()
@@ -30,6 +31,7 @@ class SelfAttention(nn.Module):
         mask = causal_mask(T).unsqueeze(0).unsqueeze(0)  # (1, 1, T, T)
         attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
         attn = F.softmax(attn_scores, dim=-1)
+        attn = self.dropout(attn)
 
         output = attn @ v
         output = output.transpose(1, 2).contiguous().view(B, T, D)
@@ -38,9 +40,9 @@ class SelfAttention(nn.Module):
 
 
 class TransformerBlock(nn.Module):
-    def __init__(self, d_model: int, n_heads: int, d_ff: int):
+    def __init__(self, d_model: int, n_heads: int, d_ff: int, drop: float = 0.1):
         super().__init__()
-        self.attn = SelfAttention(d_model=d_model, n_heads=n_heads)
+        self.attn = SelfAttention(d_model=d_model, n_heads=n_heads, drop=drop)
         self.norm1 = nn.LayerNorm(d_model)
         self.ff = nn.Sequential(
             nn.Linear(d_model, d_ff), nn.ReLU(), nn.Linear(d_ff, d_model)
@@ -63,11 +65,12 @@ class MiniTransformer(nn.Module):
     def __init__(
         self,
         vocab_size: int = 27,
-        d_model: int = 64,
+        d_model: int = 128,
         n_heads: int = 4,
-        d_ff: int = 128,
+        d_ff: int = 512,
         n_layers: int = 2,
-        max_len: int = 32,
+        max_len: int = 128,
+        drop: float = 0.1,
     ):
         super().__init__()
         self.token_emb = nn.Embedding(vocab_size, d_model)
@@ -75,7 +78,7 @@ class MiniTransformer(nn.Module):
 
         self.blocks = nn.ModuleList(
             [
-                TransformerBlock(d_model=d_model, n_heads=n_heads, d_ff=d_ff)
+                TransformerBlock(d_model=d_model, n_heads=n_heads, d_ff=d_ff, drop=drop)
                 for i in range(n_layers)
             ]
         )
@@ -83,7 +86,7 @@ class MiniTransformer(nn.Module):
         self.final_norm = nn.LayerNorm(d_model)
         self.out_layer = nn.Linear(d_model, vocab_size)
 
-        self._init_weights()
+        self.apply(self._init_weights)
 
     def forward(self, x) -> torch.Tensor:
         B, T = x.shape
@@ -98,9 +101,13 @@ class MiniTransformer(nn.Module):
 
         return logits
 
-    def _init_weights(self):
-        for name, param in self.named_parameters():
-            if param.dim() > 1:
-                nn.init.kaiming_normal_(param, nonlinearity="relu")
-            else:
-                nn.init.zeros_(param)
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            nn.init.xavier_uniform_(m.weight)
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Embedding):
+            nn.init.normal_(m.weight, mean=0.0, std=0.02)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.ones_(m.weight)
+            nn.init.zeros_(m.bias)
