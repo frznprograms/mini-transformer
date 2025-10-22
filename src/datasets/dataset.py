@@ -1,6 +1,8 @@
 import torch
+import numpy as np
 from loguru import logger
 from torch.utils.data import Dataset
+from tqdm.auto import tqdm
 
 
 class CharDataset(Dataset):
@@ -11,7 +13,10 @@ class CharDataset(Dataset):
         logger.success("Prepared character ids and reverse mappings.")
         self.context_size = context_size
 
-        self.encoded = torch.tensor([self.stoi[ch] for ch in text], dtype=torch.long)
+        arr = np.fromiter(
+            (self.stoi.get(ch, self.stoi[" "]) for ch in tqdm(text)), dtype=np.int64
+        )
+        self.encoded = torch.from_numpy(arr)
         logger.success("Prepared token encodings.")
 
     def __len__(self) -> int:
@@ -33,7 +38,7 @@ if __name__ == "__main__":
     with open("data/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 1000
+    max_size = 7000
     data = full_text[:max_size]
 
     cd = CharDataset(text=data, context_size=10)
