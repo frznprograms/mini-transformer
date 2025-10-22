@@ -5,11 +5,12 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 import yaml
 from loguru import logger
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from tqdm.auto import tqdm
 
 from src.datasets.dataset import CharDataset
 from src.models.model import MiniTransformer
+from src.models.eval import ModelEvaluator
 from src.utils.helpers import set_device
 
 from pathlib import Path
@@ -47,15 +48,23 @@ class ModelTrainer:
             "Model, Optimizer, Loss, and Configurations loaded successfully."
         )
         self.loss_history = []
+        self.avg_loss_history = []
+        self.avg_val_history = []
+        self.val_accuracy = []
 
     @logger.catch(message="Unable to complete model training.", reraise=True)
-    def train(self, dataset: CharDataset, plot_loss: bool = False) -> None:
+    def train(
+        self,
+        train_dataset,
+        val_dataset,
+        plot_loss: bool = False,
+    ) -> None:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
         batch_size = self.train_configs["batch_size"]
 
         dataloader = DataLoader(
-            dataset, batch_size=batch_size, shuffle=True, drop_last=True
+            train_dataset, batch_size=batch_size, shuffle=True, drop_last=True
         )
         n = len(dataloader)
 
@@ -88,9 +97,21 @@ class ModelTrainer:
                 self._save_model_checkpoint(step=step, pbar=progress_bar)
 
             avg_loss = total_loss / n
+            self.avg_loss_history.append(avg_loss)
             logger.info(
                 f"Epoch [{epoch+1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
             )
+            # validation loop
+            if val_dataset is not None:
+                self.evaluator = ModelEvaluator(
+                    model_checkpoint_path=None,  # can skip loading here
+                    model_config_path=self.config_path,
+                    device=self.device,
+                )
+                self.evaluator.model = self.model
+                avg_val_loss, accuracy = self.evaluator.eval(dataset=val_dataset)
+                self.avg_val_history.append(avg_val_loss)
+                self.val_accuracy.append(accuracy)
 
         self._save_final_checkpoint()
         logger.success("Training complete.")
@@ -144,10 +165,43 @@ class ModelTrainer:
             logger.warning(f"Unable to save final model checkpoint: {e}")
 
     def plot_loss(self) -> None:
-        plt.plot(self.loss_history, marker="o")
-        plt.xlabel("Step")
+        plt.figure(figsize=(16, 10))
+
+        # Step-wise training loss
+        plt.subplot(3, 1, 1)
+        plt.plot(self.loss_history, color="blue", linewidth=1)
+        plt.title("Step-wise Training Loss")
+        plt.xlabel("Training Step")
         plt.ylabel("Loss")
-        plt.title("Cross Entropy Loss through time")
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        # Average loss per epoch (train vs val)
+        plt.subplot(3, 1, 2)
+        plt.plot(self.avg_loss_history, label="Train Avg Loss", marker="o")
+        if self.avg_val_history:
+            plt.plot(self.avg_val_history, label="Val Avg Loss", marker="o")
+        plt.title("Average Loss per Epoch")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        # Validation accuracy
+        if self.val_accuracy:
+            plt.subplot(3, 1, 3)
+            plt.plot(
+                self.val_accuracy,
+                label="Validation Accuracy",
+                color="green",
+                marker="o",
+            )
+            plt.title("Validation Accuracy per Epoch")
+            plt.xlabel("Epoch")
+            plt.ylabel("Accuracy")
+            plt.grid(True, linestyle="--", alpha=0.6)
+            plt.legend()
+
+        plt.tight_layout()
         plt.show()
 
 
@@ -163,11 +217,19 @@ if __name__ == "__main__":
     with open("data/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 1000
+    max_size = 50000
     data = full_text[:max_size]
 
-    cd = CharDataset(text=data, context_size=10)
+    # context size matches positional embedding layer size
+    cd = CharDataset(text=data, context_size=128)
+    # sizes (90% train, 5% val, 5% test)
+    train_size = int(0.9 * len(cd))
+    val_size = int(0.05 * len(cd))
+    test_size = len(cd) - train_size - val_size
+
+    torch.manual_seed(42)  # for reproducibility
+    train_ds, val_ds, test_ds = random_split(cd, [train_size, val_size, test_size])
     mt = ModelTrainer(device="cpu")
 
-    mt.train(dataset=cd)
+    mt.train(train_dataset=train_ds, val_dataset=val_ds, plot_loss=False)
     mt.plot_loss()
