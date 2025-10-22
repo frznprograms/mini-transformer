@@ -14,7 +14,8 @@ class CharDataset(Dataset):
         self.context_size = context_size
 
         arr = np.fromiter(
-            (self.stoi.get(ch, self.stoi[" "]) for ch in tqdm(text)), dtype=np.int64
+            (self.stoi.get(ch, self.stoi[" "]) for ch in tqdm(text, leave=False)),
+            dtype=np.int64,
         )
         self.encoded = torch.from_numpy(arr)
         logger.success("Prepared token encodings.")
