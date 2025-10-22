@@ -8,3 +8,6 @@
 # pycache rubbish
 *.pyc
 *__pycache__
+
+# checkpoints
+checkpoints/

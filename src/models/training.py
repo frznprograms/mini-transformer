@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
 import yaml
 from loguru import logger
 from torch.utils.data import DataLoader
@@ -13,8 +14,6 @@ from src.utils.helpers import set_device
 
 from pathlib import Path
 
-# TODO: find out where to set seed
-# TODO: plot loss history
 # TODO: implement early stopping
 
 
@@ -47,9 +46,10 @@ class ModelTrainer:
         logger.success(
             "Model, Optimizer, Loss, and Configurations loaded successfully."
         )
+        self.loss_history = []
 
     @logger.catch(message="Unable to complete model training.", reraise=True)
-    def train(self, dataset: CharDataset) -> None:
+    def train(self, dataset: CharDataset, plot_loss: bool = False) -> None:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
         batch_size = self.train_configs["batch_size"]
@@ -81,6 +81,7 @@ class ModelTrainer:
                 self.optimizer.step()
 
                 total_loss += loss.item()
+                self.loss_history.append(loss.item())
                 progress_bar.set_postfix(loss=loss.item())
                 step += 1
 
@@ -93,6 +94,8 @@ class ModelTrainer:
 
         self._save_final_checkpoint()
         logger.success("Training complete.")
+        if plot_loss:
+            self.plot_loss()
 
     def _save_model_checkpoint(self, step: int, pbar):
         experiment_name = self.train_configs.get(
@@ -140,6 +143,13 @@ class ModelTrainer:
         except Exception as e:
             logger.warning(f"Unable to save final model checkpoint: {e}")
 
+    def plot_loss(self) -> None:
+        plt.plot(self.loss_history, marker="o")
+        plt.xlabel("Step")
+        plt.ylabel("Loss")
+        plt.title("Cross Entropy Loss through time")
+        plt.show()
+
 
 if __name__ == "__main__":
     # mt = ModelTrainer()
@@ -153,10 +163,11 @@ if __name__ == "__main__":
     with open("data/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 10000
+    max_size = 1000
     data = full_text[:max_size]
 
     cd = CharDataset(text=data, context_size=10)
     mt = ModelTrainer(device="cpu")
 
     mt.train(dataset=cd)
+    mt.plot_loss()
