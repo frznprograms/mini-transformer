@@ -20,6 +20,8 @@ class SelfAttention(nn.Module):
         self.Wo = nn.Linear(d_model, d_model)
         self.dropout = nn.Dropout(p=drop)
 
+        self.register_buffer("mask_cache", None, persistent=False)
+
     def forward(self, x) -> torch.Tensor:
         B, T, D = x.size()
         q = self.WQ(x).view(B, T, self.n_heads, self.d_k).transpose(1, 2)
@@ -28,7 +30,12 @@ class SelfAttention(nn.Module):
 
         attn_scores = (q @ k.transpose(-2, -1)) / (self.d_k**0.5)
 
-        mask = causal_mask(T).unsqueeze(0).unsqueeze(0)  # (1, 1, T, T)
+        if self.mask_cache is None or self.mask_cache.size(1) != T:
+            self.mask_cache = (
+                causal_mask(T).unsqueeze(0).unsqueeze(0).to(x.device)
+            )  # (1, 1, T, T)
+        mask = self.mask_cache
+
         attn_scores = attn_scores.masked_fill(mask == 0, float("-inf"))
         attn = F.softmax(attn_scores, dim=-1)
         attn = self.dropout(attn)
