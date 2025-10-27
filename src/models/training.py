@@ -58,6 +58,9 @@ class ModelTrainer:
         train_dataset,
         val_dataset,
         plot_loss: bool = False,
+        early_stop: bool = False,
+        tol: float = 0.01,
+        tol_steps: int = 1000,
     ) -> None:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
@@ -93,6 +96,18 @@ class ModelTrainer:
                 self.loss_history.append(loss.item())
                 progress_bar.set_postfix(loss=loss.item())
                 step += 1
+
+                if early_stop and self.loss_history and step % tol_steps == 0:
+                    # implement early stopping
+                    loss_after_tol_steps = (
+                        self.loss_history[step - tol_steps]
+                        - self.loss_history[step - 1]
+                    )
+                    if loss_after_tol_steps < tol:
+                        logger.warning(
+                            f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+                        )
+                        return None
 
                 self._save_model_checkpoint(step=step, pbar=progress_bar)
 
@@ -217,7 +232,7 @@ if __name__ == "__main__":
     with open("data/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 50000
+    max_size = 10000
     data = full_text[:max_size]
 
     # context size matches positional embedding layer size
@@ -231,5 +246,12 @@ if __name__ == "__main__":
     train_ds, val_ds, test_ds = random_split(cd, [train_size, val_size, test_size])
     mt = ModelTrainer(device="cpu")
 
-    mt.train(train_dataset=train_ds, val_dataset=val_ds, plot_loss=False)
-    mt.plot_loss()
+    mt.train(
+        train_dataset=train_ds,
+        val_dataset=val_ds,
+        plot_loss=False,
+        early_stop=True,
+        tol=3.0,  # too high, just to test early stopping
+        tol_steps=100,
+    )
+    # mt.plot_loss()
