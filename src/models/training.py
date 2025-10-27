@@ -1,21 +1,18 @@
 from dataclasses import dataclass
+from pathlib import Path
 
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 import yaml
 from loguru import logger
 from torch.utils.data import DataLoader, random_split
 from tqdm.auto import tqdm
 
 from src.datasets.dataset import CharDataset
-from src.models.model import MiniTransformer
 from src.models.eval import ModelEvaluator
+from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
-
-from pathlib import Path
-
-# TODO: implement early stopping
 
 
 @dataclass
@@ -78,7 +75,7 @@ class ModelTrainer:
             total_loss = 0.0
 
             progress_bar = tqdm(
-                dataloader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False
+                dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
             )
 
             for x, y in progress_bar:
@@ -114,7 +111,7 @@ class ModelTrainer:
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
             logger.info(
-                f"Epoch [{epoch+1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
+                f"Epoch [{epoch + 1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
             )
             # validation loop
             if val_dataset is not None:

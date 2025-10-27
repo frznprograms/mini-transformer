@@ -8,9 +8,9 @@ from src.utils.helpers import causal_mask
 class SelfAttention(nn.Module):
     def __init__(self, d_model: int, n_heads: int, drop: float = 0.1):
         super().__init__()
-        assert (
-            d_model % n_heads == 0
-        ), "Model dimension must be divisible by number of attention heads!"
+        assert d_model % n_heads == 0, (
+            "Model dimension must be divisible by number of attention heads!"
+        )
         self.d_k = d_model // n_heads
         self.n_heads = n_heads
 
