@@ -94,6 +94,8 @@ class ModelTrainer:
                 progress_bar.set_postfix(loss=loss.item())
                 step += 1
 
+                self._save_model_checkpoint(step=step, pbar=progress_bar)
+
                 if early_stop and self.loss_history and step % tol_steps == 0:
                     # implement early stopping
                     loss_after_tol_steps = (
@@ -105,8 +107,6 @@ class ModelTrainer:
                             f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
                         )
                         return None
-
-                self._save_model_checkpoint(step=step, pbar=progress_bar)
 
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
