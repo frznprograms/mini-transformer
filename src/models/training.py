@@ -1,21 +1,18 @@
 from dataclasses import dataclass
+from pathlib import Path
 
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 import yaml
 from loguru import logger
 from torch.utils.data import DataLoader, random_split
 from tqdm.auto import tqdm
 
 from src.datasets.dataset import CharDataset
-from src.models.model import MiniTransformer
 from src.models.eval import ModelEvaluator
+from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
-
-from pathlib import Path
-
-# TODO: implement early stopping
 
 
 @dataclass
@@ -58,6 +55,9 @@ class ModelTrainer:
         train_dataset,
         val_dataset,
         plot_loss: bool = False,
+        early_stop: bool = False,
+        tol: float = 0.01,
+        tol_steps: int = 1000,
     ) -> None:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
@@ -75,7 +75,7 @@ class ModelTrainer:
             total_loss = 0.0
 
             progress_bar = tqdm(
-                dataloader, desc=f"Epoch {epoch+1}/{num_epochs}", leave=False
+                dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
             )
 
             for x, y in progress_bar:
@@ -96,10 +96,22 @@ class ModelTrainer:
 
                 self._save_model_checkpoint(step=step, pbar=progress_bar)
 
+                if early_stop and self.loss_history and step % tol_steps == 0:
+                    # implement early stopping
+                    loss_after_tol_steps = (
+                        self.loss_history[step - tol_steps]
+                        - self.loss_history[step - 1]
+                    )
+                    if loss_after_tol_steps < tol:
+                        logger.warning(
+                            f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+                        )
+                        return None
+
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
             logger.info(
-                f"Epoch [{epoch+1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
+                f"Epoch [{epoch + 1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
             )
             # validation loop
             if val_dataset is not None:
@@ -217,7 +229,7 @@ if __name__ == "__main__":
     with open("data/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 50000
+    max_size = 10000
     data = full_text[:max_size]
 
     # context size matches positional embedding layer size
@@ -231,5 +243,12 @@ if __name__ == "__main__":
     train_ds, val_ds, test_ds = random_split(cd, [train_size, val_size, test_size])
     mt = ModelTrainer(device="cpu")
 
-    mt.train(train_dataset=train_ds, val_dataset=val_ds, plot_loss=False)
-    mt.plot_loss()
+    mt.train(
+        train_dataset=train_ds,
+        val_dataset=val_ds,
+        plot_loss=False,
+        early_stop=True,
+        tol=3.0,  # too high, just to test early stopping
+        tol_steps=100,
+    )
+    # mt.plot_loss()

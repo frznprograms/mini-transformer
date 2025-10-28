@@ -1,16 +1,15 @@
+from typing import Optional
+
 import torch
 import torch.nn as nn
-
-from tqdm.auto import tqdm
 import yaml
 from loguru import logger
+from torch.utils.data import DataLoader
+from tqdm.auto import tqdm
+
 from src.datasets.dataset import CharDataset
 from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
-
-from torch.utils.data import DataLoader
-from typing import Optional
-
 
 # TODO: find out where to set seed
 

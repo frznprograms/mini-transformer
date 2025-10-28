@@ -1,5 +1,5 @@
-import torch
 import numpy as np
+import torch
 from loguru import logger
 from torch.utils.data import Dataset
 from tqdm.auto import tqdm
