@@ -175,3 +175,28 @@ def load_data_splits(
     logger.success("Loaded text8 dataset successfully. Happy training!")
 
     return train, val, test, encoded
+
+
+def decode_dataset_text(
+    dataset, max_chars: int = 500, separator: str = "\n--- SEGMENT BOUNDARY ---\n"
+) -> str:
+    """
+    Returns a human-readable string showing the text content spanned
+    by this dataset's segments.
+
+    Args:
+        dataset (SegmentedCharDataset): the dataset (train/val/test)
+        max_chars (int): maximum number of characters to decode per segment.
+                         Useful for large corpora — set None to show all.
+        separator (str): string inserted between segments for clarity.
+
+    Returns:
+        str: decoded snippet of text used for this dataset.
+    """
+    text_pieces = []
+    for s, e in dataset.segments:
+        segment_tensor = dataset.encoded[s:e]
+        if max_chars is not None:
+            segment_tensor = segment_tensor[:max_chars]
+        text_pieces.append(decode(segment_tensor))
+    return separator.join(text_pieces)
