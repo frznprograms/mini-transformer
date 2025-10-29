@@ -10,6 +10,7 @@ from tqdm.auto import tqdm
 from src.datasets.dataset import CharDataset
 from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
+from src.utils.decorators import timed_execution
 
 # TODO: find out where to set seed
 
@@ -45,6 +46,8 @@ class ModelEvaluator:
         if self.model is not None:
             logger.success("Loaded model from checkpoint and configuration.")
 
+    @timed_execution
+    @logger.catch(message="Unable to complete model evaluation.", reraise=True)
     @torch.no_grad()
     def eval(self, dataset: CharDataset) -> tuple[float, float]:
         self.model.eval()  # type: ignore

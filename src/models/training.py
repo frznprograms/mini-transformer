@@ -13,6 +13,7 @@ from src.datasets.dataset import CharDataset
 from src.models.eval import ModelEvaluator
 from src.models.model import MiniTransformer
 from src.utils.helpers import set_device
+from src.utils.decorators import timed_execution
 
 
 @dataclass
@@ -49,6 +50,7 @@ class ModelTrainer:
         self.avg_val_history = []
         self.val_accuracy = []
 
+    @timed_execution
     @logger.catch(message="Unable to complete model training.", reraise=True)
     def train(
         self,
