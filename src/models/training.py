@@ -6,13 +6,12 @@ import torch
 import torch.nn as nn
 import yaml
 from loguru import logger
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
-from src.datasets.dataset import CharDataset
 from src.models.eval import ModelEvaluator
 from src.models.model import MiniTransformer
-from src.utils.helpers import set_device
+from src.utils.helpers import set_device, set_seeds, load_data_splits
 from src.utils.decorators import timed_execution
 
 
@@ -20,6 +19,7 @@ from src.utils.decorators import timed_execution
 class ModelTrainer:
     config_path: str = "src/configs/base_configs.yaml"
     device: str = "auto"
+    seed: int = 42
 
     def __post_init__(self) -> None:
         configs = None
@@ -32,6 +32,8 @@ class ModelTrainer:
             )
             raise e
 
+        # ensure weight initialisation is reproducible
+        set_seeds(self.seed)
         self.device = set_device(self.device)
         logger.info(f"Device has been set to {self.device}")
 
@@ -228,29 +230,17 @@ if __name__ == "__main__":
     # print(f"Criterion/Loss Function: {mt.criterion}")
     # print(f"Model: {mt.model}")
 
-    with open("data/text8", "r") as f:
-        full_text = f.read()
-
-    max_size = 10000
-    data = full_text[:max_size]
-
-    # context size matches positional embedding layer size
-    cd = CharDataset(text=data, context_size=128)
-    # sizes (90% train, 5% val, 5% test)
-    train_size = int(0.9 * len(cd))
-    val_size = int(0.05 * len(cd))
-    test_size = len(cd) - train_size - val_size
-
-    torch.manual_seed(42)  # for reproducibility
-    train_ds, val_ds, test_ds = random_split(cd, [train_size, val_size, test_size])
-    mt = ModelTrainer(device="cpu")
+    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    mt = ModelTrainer(
+        device="cpu", config_path="src/configs/base_configs.yaml", seed=42
+    )
 
     mt.train(
-        train_dataset=train_ds,
-        val_dataset=val_ds,
+        train_dataset=train,
+        val_dataset=val,
         plot_loss=False,
         early_stop=True,
-        tol=3.0,  # too high, just to test early stopping
-        tol_steps=100,
+        # tol=1.0,  # too high, just to test early stopping
+        # tol_steps=100,
     )
     # mt.plot_loss()

@@ -1,6 +1,5 @@
 import torch
 import numpy as np
-from loguru import logger
 from torch.utils.data import Dataset
 from dataclasses import dataclass
 
@@ -42,7 +41,6 @@ class SegmentedCharDataset(Dataset):
 
         self._cumsum = np.cumsum(self._counts)  # for O(logn) index mapping
         self._total = int(self._cumsum[-1]) if len(self._cumsum) else 0
-        logger.success("Prepared needed utilities for dataset successfully.")
 
     def __len__(self):
         return self._total
@@ -60,4 +58,4 @@ class SegmentedCharDataset(Dataset):
         X = self.encoded[start : start + self.context_size]
         y = self.encoded[start + 1 : start + 1 + self.context_size]
 
-        return torch.tensor(X), torch.tensor(y)
+        return X, y
