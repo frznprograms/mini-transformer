@@ -3,13 +3,13 @@ model:
   vocab_size: 27
   d_model: 64
   n_heads: 8
-  d_ff: 512 # change to 1024?
+  d_ff: 512
   n_layers: 4
   max_len: 128
   drop: 0.2
 
 train:
-  experiment_name: "base_model"
+  experiment_name: "experiement-1"
   epochs: 3 # change to 5 or 10?
   lr: 0.0003
   batch_size: 32

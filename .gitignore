@@ -1,5 +1,5 @@
 # data
-/data
+/data/raw
 
 # IDE-related rubbish
 .vscode
@@ -8,6 +8,3 @@
 # pycache rubbish
 *.pyc
 *__pycache__
-
-# checkpoints
-checkpoints/

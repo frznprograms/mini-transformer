@@ -13,4 +13,4 @@ train:
   lr: 0.0003
   batch_size: 32
   save_strategy: "steps"
-  save_steps: 1000
+  save_steps: 5000
