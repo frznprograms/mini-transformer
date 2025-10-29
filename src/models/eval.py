@@ -7,11 +7,10 @@ from loguru import logger
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
-from src.datasets.dataset import CharDataset
+from src.datasets.segment import SegmentedCharDataset
 from src.models.model import MiniTransformer
-from src.utils.helpers import set_device
-
-# TODO: find out where to set seed
+from src.utils.helpers import set_device, load_data_splits
+from src.utils.decorators import timed_execution
 
 
 class ModelEvaluator:
@@ -45,8 +44,10 @@ class ModelEvaluator:
         if self.model is not None:
             logger.success("Loaded model from checkpoint and configuration.")
 
+    @timed_execution
+    @logger.catch(message="Unable to complete model evaluation.", reraise=True)
     @torch.no_grad()
-    def eval(self, dataset: CharDataset) -> tuple[float, float]:
+    def eval(self, dataset: SegmentedCharDataset) -> tuple[float, float]:
         self.model.eval()  # type: ignore
         batch_size = self.train_configs["batch_size"]
         dataloader = DataLoader(
@@ -94,10 +95,10 @@ if __name__ == "__main__":
     max_size = 50000
     data = full_text[max_size : max_size + 10000]
 
-    cd = CharDataset(text=data, context_size=10)
+    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
     me = ModelEvaluator(
         model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",
         model_config_path="src/configs/base_configs.yaml",
         device="cpu",
     )
-    me.eval(dataset=cd)
+    me.eval(dataset=test)
