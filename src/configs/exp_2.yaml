@@ -1,0 +1,17 @@
+# experiement-2: increasing d_ff
+model:
+  vocab_size: 27
+  d_model: 128
+  n_heads: 4
+  d_ff: 1024
+  n_layers: 2
+  max_len: 128
+  drop: 0.3
+
+train:
+  experiment_name: "experiment-2"
+  epochs: 3
+  lr: 0.00001
+  batch_size: 32
+  save_strategy: "steps"
+  save_steps: 5000
