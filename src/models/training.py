@@ -13,24 +13,32 @@ from src.models.eval import ModelEvaluator
 from src.models.model import MiniTransformer
 from src.utils.helpers import set_device, set_seeds, load_data_splits
 from src.utils.decorators import timed_execution
+from src.datasets.segment import SegmentedCharDataset
 
+import copy
+import json
+from sklearn.model_selection import ParameterGrid
 
 @dataclass
 class ModelTrainer:
-    config_path: str = "src/configs/base_configs.yaml"
+    config: dict
     device: str = "auto"
     seed: int = 42
+    # config_path: str = "src/configs/all_configs.yaml"
+    # device: str = "auto"
+    # seed: int = 42
 
     def __post_init__(self) -> None:
-        configs = None
-        try:
-            with open(self.config_path, "r") as f:
-                configs = yaml.safe_load(f)
-        except Exception as e:
-            logger.error(
-                "Unable to load Configurations. Please check that the file path is correct, and see the error below: "
-            )
-            raise e
+        configs = self.config
+        # configs = None
+        # try:
+        #     with open(self.config_path, "r") as f:
+        #         configs = yaml.safe_load(f)
+        # except Exception as e:
+        #     logger.error(
+        #         "Unable to load Configurations. Please check that the file path is correct, and see the error below: "
+        #     )
+        #     raise e
 
         # ensure weight initialisation is reproducible
         set_seeds(self.seed)
@@ -62,13 +70,16 @@ class ModelTrainer:
         early_stop: bool = False,
         tol: float = 0.01,
         tol_steps: int = 1000,
-    ) -> None:
+    ) -> dict:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
         batch_size = self.train_configs["batch_size"]
 
         dataloader = DataLoader(
-            train_dataset, batch_size=batch_size, shuffle=True, drop_last=True
+            train_dataset, 
+            batch_size=batch_size, 
+            shuffle=True, 
+            drop_last=True
         )
         n = len(dataloader)
 
@@ -121,7 +132,9 @@ class ModelTrainer:
             if val_dataset is not None:
                 self.evaluator = ModelEvaluator(
                     model_checkpoint_path=None,  # can skip loading here
-                    model_config_path=self.config_path,
+                    model_config=self.model_configs,
+                    train_config=self.train_configs,
+                    # model_config_path=self.config_path,
                     device=self.device,
                 )
                 self.evaluator.model = self.model
@@ -133,6 +146,12 @@ class ModelTrainer:
         logger.success("Training complete.")
         if plot_loss:
             self.plot_loss()
+        
+        # final metrics from final epoch
+        final_loss = self.avg_val_history[-1] if self.avg_val_history else float('inf')
+        final_acc = self.val_accuracy[-1] if self.val_accuracy else 0.0
+
+        return {"loss": final_loss, "accuracy": final_acc}
 
     def _save_model_checkpoint(self, step: int, pbar):
         experiment_name = self.train_configs.get(
@@ -220,8 +239,114 @@ class ModelTrainer:
         plt.tight_layout()
         plt.show()
 
+## Grid search manager
+class GridSearchManager:
+    def __init__(self, config_path: str, seed: int = 42, device: str = "auto"):
+        self.config_path = config_path
+        self.seed = seed
+        self.device = device
 
-if __name__ == "__main__":
+        try:
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+        except Exception as e:
+            logger.error(f"Failed to load grid search config: {e}")
+            raise
+
+        assert config is not None, f"Config file is empty or invalid: {config_path}"
+        
+        self.base_config = config['base_config']
+        self.grid_params = config['grid_search_params']
+        self.run_results = []
+
+        logger.info("GridSearchManager initialized")
+    
+    ## function to run grid search
+    def run(self, train_dataset, val_dataset):
+        ## combinations of parameters
+        all_param_combinations = list(ParameterGrid(self.grid_params))
+        total_runs = len(all_param_combinations)
+        logger.info(f"Starting grid search. Total experiments: {total_runs}")
+
+        for i, params in enumerate(all_param_combinations):
+            logger.info(f"---Starting run {i+1}/{total_runs}")
+            current_config = copy.deepcopy(self.base_config)
+            run_name = current_config['train']['experiment_name']
+
+            for key, value in params.items():
+                if key in current_config['model']:
+                    current_config['model'][key] = value
+                elif key in current_config['train']:
+                    current_config['train'][key] = value
+                run_name += f"_{key}{value}" ## (?)
+            
+            current_config['train']['experiment_name'] = run_name
+
+            logger.info(f"Params: {json.dumps(params)}")
+
+            try:
+                trainer = ModelTrainer(
+                    config = current_config,
+                    device = self.device,
+                    seed = self.seed
+                )
+
+                metrics = trainer.train(
+                    train_dataset=train_dataset,
+                    val_dataset=val_dataset, 
+                    plot_loss=False
+                )
+                
+                ## logging results
+                self.run_results.append({
+                    'run_name': run_name,
+                    'params': params,
+                    'final_val_loss': metrics['loss'],
+                    'final_val_accuracy': metrics['accuracy']
+                })
+
+                logger.success(f"--- Finished Run {i+1}/{total_runs}. "
+                               f"Loss: {metrics['loss']:.4f}, "
+                               f"Accuracy: {metrics['accuracy']:.4f} ---")
+
+            except Exception as e:
+                logger.error(f"Run {run_name} failed: {e}")
+                self.run_results.append({'run_name': run_name,
+                                         'params': params,
+                                         'final_val_loss': float('inf'),
+                                         'final_val_accuracy': 0.0,
+                                         'error': str(e)})
+            
+            self.report_results()
+    
+    def report_results(self):
+        if not self.run_results:
+            logger.warning("No results to report.")
+            return
+        logger.info("==================================================")
+        logger.info("GRID SEARCH COMPLETE")
+
+        best_loss_run = min(self.run_results, key=lambda x: x['final_val_loss'])
+        best_acc_run = max(self.run_results, key=lambda x: x['final_val_accuracy'])
+
+        logger.info("\n--- Best run by Loss ---")
+        logger.info(f"Run: {best_loss_run['run_name']}")
+        logger.info(f"Params: {best_loss_run['params']}")
+        logger.info(f"Validation Loss: {best_loss_run['final_val_loss']:.4f}")
+        logger.info(f"Validation Acc: {best_loss_run['final_val_accuracy']:.4f}")
+
+        logger.info("\n--- Best run by accuracy ---")
+        logger.info(f"Run: {best_acc_run['run_name']}")
+        logger.info(f"Params: {best_acc_run['params']}")
+        logger.info(f"Validation loss: {best_acc_run['final_val_loss']:.4f}")
+        logger.info(f"Validation acc: {best_acc_run['final_val_accuracy']:.4f}")
+
+        results_file = 'grid_search_results.json'
+        with open(results_file, 'w') as f:
+            json.dump(self.run_results, f, indent=2)
+        logger.info(f"All run results saved to {results_file}")
+
+# if __name__ == "__main__":
     # mt = ModelTrainer()
     # print(f"Model Configs: {mt.model_configs}")
     # print(f"Train Configs: {mt.train_configs}")
@@ -230,17 +355,63 @@ if __name__ == "__main__":
     # print(f"Criterion/Loss Function: {mt.criterion}")
     # print(f"Model: {mt.model}")
 
-    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
-    mt = ModelTrainer(
-        device="cpu", config_path="src/configs/base_configs.yaml", seed=42
-    )
+    # train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    # mt = ModelTrainer(
+    #     device="cpu", config_path="src/configs/all_configs.yaml", seed=42
+    # )
 
-    mt.train(
-        train_dataset=train,
-        val_dataset=val,
-        plot_loss=False,
-        early_stop=True,
+    # mt.train(
+    #     train_dataset=train,
+    #     val_dataset=val,
+    #     plot_loss=False,
+    #     early_stop=True,
         # tol=1.0,  # too high, just to test early stopping
         # tol_steps=100,
-    )
+    # )
     # mt.plot_loss()
+
+## test block: checks if updated training model works
+# if __name__ == "__main__":
+    
+#     logger.info("Loading data for single-run test...")
+#     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+
+#     config_path = "src/configs/base_configs.yaml"  # Use your base config for testing
+#     with open(config_path, "r") as f:
+#         configs = yaml.safe_load(f)
+        
+#     logger.info(f"Running single test from {config_path}")
+
+#     mt = ModelTrainer(
+#         config=configs,
+#         device="cpu", 
+#         seed=42
+#     )
+
+#     mt.train(
+#         train_dataset=train,
+#         val_dataset=val,
+#         plot_loss=True, # Set to True to see the plot
+#         early_stop=True
+#     )
+    
+#     logger.success("Single-run test complete.")
+
+## test block: checks if grid search works
+if __name__ == "__main__":
+    logger.info("Loading data for Grid Search Test...")
+    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    logger.info("Loaded training and validation datasets.")
+
+    config_file_path = "src/configs/test_grid_configs.yaml"
+
+    search_manager = GridSearchManager(
+        config_path=config_file_path,
+        device="auto",
+        seed=42
+    )
+
+    logger.info(f"Starting Grid Search test from {config_file_path}")
+    search_manager.run(train, val)
+
+    logger.success("Grid Search test complete")
