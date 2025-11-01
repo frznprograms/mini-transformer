@@ -17,29 +17,34 @@ class ModelEvaluator:
     def __init__(
         self,
         model_checkpoint_path: Optional[str],
-        model_config_path: str,
+        # model_config_path: str,
+        model_config: dict,
+        train_config: dict,
         device: str = "auto",
     ):
-        configs = None
+        # configs = None
         self.model = None
-        try:
-            with open(model_config_path, "r") as f:
-                configs = yaml.safe_load(f)
-        except Exception as e:
-            logger.error(
-                "Unable to load Configurations. Please check that the file path is correct, and see the error below: "
-            )
-            raise e
+        # try:
+        #     with open(model_config_path, "r") as f:
+        #         configs = yaml.safe_load(f)
+        # except Exception as e:
+        #     logger.error(
+        #         "Unable to load Configurations. Please check that the file path is correct, and see the error below: "
+        #     )
+        #     raise e
+        self.model_configs = model_config
 
         self.device = set_device(device)
         logger.info(f"Device has been set to {self.device}")
 
-        self.model_configs = configs["model"]
-        self.train_configs = configs["train"]
+        self.model_configs = model_config
+        self.train_configs = train_config
         if model_checkpoint_path is not None:
             self.model = MiniTransformer(**self.model_configs).to(self.device)
             self.model.load_state_dict(
-                torch.load(model_checkpoint_path, weights_only=True)
+                torch.load(model_checkpoint_path, 
+                           map_location = torch.device(self.device),
+                           weights_only=True)
             )
         if self.model is not None:
             logger.success("Loaded model from checkpoint and configuration.")
@@ -50,6 +55,7 @@ class ModelEvaluator:
     def eval(self, dataset: SegmentedCharDataset) -> tuple[float, float]:
         self.model.eval()  # type: ignore
         batch_size = self.train_configs["batch_size"]
+
         dataloader = DataLoader(
             dataset, batch_size=batch_size, shuffle=False, drop_last=False
         )
@@ -89,16 +95,40 @@ class ModelEvaluator:
 
 
 if __name__ == "__main__":
-    with open("data/text8", "r") as f:
-        full_text = f.read()
+    ## [testing] loading all_configs file
+    config_path = "src/configs/base_configs.yaml"
+    with open(config_path, "r") as f:
+        configs = yaml.safe_load(f)
+    
+    model_config = configs["model"]
+    train_config = configs["train"]
 
-    max_size = 50000
-    data = full_text[max_size : max_size + 10000]
+    # with open("data/text8", "r") as f:
+    #     full_text = f.read()
+    
+    # test_slice_text = full_text[:10000]
+    # logger.info(f"Loaded test slice with {len(test_slice_text)} characters.")
 
     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+
+    logger.info(f"Loaded pre-segmented test dataset.")
+
     me = ModelEvaluator(
         model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",
-        model_config_path="src/configs/base_configs.yaml",
+        model_config=model_config,
+        train_config=train_config,
         device="cpu",
     )
+
     me.eval(dataset=test)
+
+    # max_size = 50000
+    # data = full_text[max_size : max_size + 10000]
+
+    # train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    # me = ModelEvaluator(
+    #     model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",
+    #     model_config_path="src/configs/base_configs.yaml",
+    #     device="cpu",
+    # )
+    # me.eval(dataset=test)
