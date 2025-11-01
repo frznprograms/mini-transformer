@@ -22,16 +22,7 @@ class ModelEvaluator:
         train_config: dict,
         device: str = "auto",
     ):
-        # configs = None
         self.model = None
-        # try:
-        #     with open(model_config_path, "r") as f:
-        #         configs = yaml.safe_load(f)
-        # except Exception as e:
-        #     logger.error(
-        #         "Unable to load Configurations. Please check that the file path is correct, and see the error below: "
-        #     )
-        #     raise e
         self.model_configs = model_config
 
         self.device = set_device(device)
@@ -42,9 +33,11 @@ class ModelEvaluator:
         if model_checkpoint_path is not None:
             self.model = MiniTransformer(**self.model_configs).to(self.device)
             self.model.load_state_dict(
-                torch.load(model_checkpoint_path, 
-                           map_location = torch.device(self.device),
-                           weights_only=True)
+                torch.load(
+                    model_checkpoint_path,
+                    map_location=torch.device(self.device),
+                    weights_only=True,
+                )
             )
         if self.model is not None:
             logger.success("Loaded model from checkpoint and configuration.")
@@ -99,19 +92,19 @@ if __name__ == "__main__":
     config_path = "src/configs/base_configs.yaml"
     with open(config_path, "r") as f:
         configs = yaml.safe_load(f)
-    
+
     model_config = configs["model"]
     train_config = configs["train"]
 
     # with open("data/text8", "r") as f:
     #     full_text = f.read()
-    
+
     # test_slice_text = full_text[:10000]
     # logger.info(f"Loaded test slice with {len(test_slice_text)} characters.")
 
     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
 
-    logger.info(f"Loaded pre-segmented test dataset.")
+    logger.info("Loaded pre-segmented test dataset.")
 
     me = ModelEvaluator(
         model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     with open("data/raw/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 500000
+    max_size = 100000
     data = full_text[:max_size]
 
     save_text8_splits(
