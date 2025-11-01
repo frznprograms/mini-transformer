@@ -1,0 +1,24 @@
+[
+  {
+    "run_name": "grid_search_TEST_d_ff512_d_model128_lr0.0001_n_heads4",
+    "params": {
+      "d_ff": 512,
+      "d_model": 128,
+      "lr": 0.0001,
+      "n_heads": 4
+    },
+    "final_val_loss": 1.6293613936311455,
+    "final_val_accuracy": 0.5001747377457157
+  },
+  {
+    "run_name": "grid_search_TEST_d_ff512_d_model128_lr0.0002_n_heads4",
+    "params": {
+      "d_ff": 512,
+      "d_model": 128,
+      "lr": 0.0002,
+      "n_heads": 4
+    },
+    "final_val_loss": 1.5266036837892507,
+    "final_val_accuracy": 0.530517085905998
+  }
+]
