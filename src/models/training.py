@@ -31,7 +31,6 @@ class ModelTrainer:
     def __post_init__(self) -> None:
         configs = self.config
         # ensure weight initialisation is reproducible
-
         set_seeds(self.seed)
         self.device = set_device(self.device)
         logger.info(f"Device has been set to {self.device}")
@@ -109,7 +108,7 @@ class ModelTrainer:
                         logger.warning(
                             f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
                         )
-                        return None
+                        return {}
 
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
@@ -382,4 +381,3 @@ if __name__ == "__main__":
     search_manager.run(train, val)
 
     logger.success("Grid Search test complete")
-

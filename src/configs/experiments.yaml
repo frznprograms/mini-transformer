@@ -7,17 +7,17 @@ base_config:
     n_layers: 2
     max_len: 128
     drop: 0.3
-  
   train:
-    experiment_name: "grid_search_TEST"
-    epochs: 1
+    experiment_name: "base_model"
+    epochs: 3
     lr: 0.00001
     batch_size: 32
-    save_strategy: "none"
+    save_strategy: "steps"
     save_steps: 5000
 
 grid_search_params:
-  d_model: [128]
-  n_heads: [4]
-  d_ff: [512]
-  lr: [0.0001, 0.0002]
+  d_model: [64, 128, 256, 512]
+  n_heads: [1, 2, 4, 8]
+  d_ff: [256, 512, 1024]
+  lr: [0.00001, 0.00003, 0.00005]
+  batch_size: [8, 16, 32]
