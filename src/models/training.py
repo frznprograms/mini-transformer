@@ -366,33 +366,6 @@ class GridSearchManager:
 # )
 # mt.plot_loss()
 
-## test block: checks if updated training model works
-# if __name__ == "__main__":
-
-#     logger.info("Loading data for single-run test...")
-#     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
-
-#     config_path = "src/configs/base_configs.yaml"  # Use your base config for testing
-#     with open(config_path, "r") as f:
-#         configs = yaml.safe_load(f)
-
-#     logger.info(f"Running single test from {config_path}")
-
-#     mt = ModelTrainer(
-#         config=configs,
-#         device="cpu",
-#         seed=42
-#     )
-
-#     mt.train(
-#         train_dataset=train,
-#         val_dataset=val,
-#         plot_loss=True, # Set to True to see the plot
-#         early_stop=True
-#     )
-
-#     logger.success("Single-run test complete.")
-
 ## test block: checks if grid search works
 if __name__ == "__main__":
     logger.info("Loading data for Grid Search Test...")
