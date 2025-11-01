@@ -27,22 +27,15 @@ class LoggedProcess:
         """
         Set up loguru handlers for console and error files.
         """
-        timestamp = datetime.now().strftime("%d_%H%M")
-        error_dir = self.output_dir / "error"
-
         # Remove any default handlers
         logger.remove()
+        timestamp = datetime.now().strftime("%d_%H%M")
+        error_dir = self.output_dir / "error"
 
         # for CLI
         logger.add(
             sys.stderr,
-            # format=(
-            #     "<green>{time:DD MMMM, YYYY > HH:mm:ss}</green> | "
-            #     "<level>{level: <8}</level> | "
-            #     "<white>{message}</white>"
-            # ),
             level="INFO",
-            colorize=True,
         )
 
         # errors written to disk
@@ -63,7 +56,7 @@ class LoggedProcess:
             retention="7 days",
         )
 
-        logger.success(f"Logger initialized — logs saved to: {self.output_dir}")
+        logger.success(f"Logger initialized — logs will be saved to: {self.output_dir}")
 
         return logger
 

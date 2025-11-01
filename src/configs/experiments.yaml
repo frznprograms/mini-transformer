@@ -13,11 +13,12 @@ base_config:
     lr: 0.00001
     batch_size: 32
     save_strategy: "steps"
-    save_steps: 5000
+    save_steps: 2500
 
 grid_search_params:
   d_model: [64, 128, 256, 512]
   n_heads: [1, 2, 4, 8]
-  d_ff: [256, 512, 1024]
+  n_layers: [1, 2, 4, 6]
+  d_ff: [128, 256, 512]
   lr: [0.00001, 0.00003, 0.00005]
   batch_size: [8, 16, 32]
