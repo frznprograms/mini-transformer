@@ -1,8 +1,9 @@
-from loguru import logger
-from datetime import datetime
-from pathlib import Path
 import sys
 import time
+from datetime import datetime
+from pathlib import Path
+
+from loguru import logger
 
 
 class LoggedProcess:

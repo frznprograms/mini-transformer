@@ -1,12 +1,14 @@
-from src.models.training import ModelTrainer
-from src.configs.logger_config import LoggedProcess
-from src.utils.helpers import load_data_splits
-from src.utils.decorators import timed_execution
-from loguru import logger
-import yaml
-from sklearn.model_selection import ParameterGrid
 import copy
 import json
+
+import yaml
+from loguru import logger
+from sklearn.model_selection import ParameterGrid
+
+from src.configs.logger_config import LoggedProcess
+from src.models.training import ModelTrainer
+from src.utils.decorators import timed_execution
+from src.utils.helpers import load_data_splits
 
 
 class GridSearchManager(LoggedProcess):
@@ -45,7 +47,7 @@ class GridSearchManager(LoggedProcess):
         logger.info(f"Starting grid search. Total experiments: {total_runs}")
 
         for i, params in enumerate(all_param_combinations):
-            logger.info(f"---Starting run {i+1}/{total_runs}")
+            logger.info(f"---Starting run {i + 1}/{total_runs}")
             current_config = copy.deepcopy(self.base_config)
             run_name = current_config["train"]["experiment_name"]
 
@@ -82,7 +84,7 @@ class GridSearchManager(LoggedProcess):
                 )
 
                 logger.success(
-                    f"--- Finished Run {i+1}/{total_runs}. "
+                    f"--- Finished Run {i + 1}/{total_runs}. "
                     f"Loss: {metrics['loss']:.4f}, "
                     f"Accuracy: {metrics['accuracy']:.4f} ---"
                 )
