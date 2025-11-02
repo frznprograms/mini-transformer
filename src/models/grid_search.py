@@ -137,7 +137,8 @@ if __name__ == "__main__":
     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
     logger.success("Loaded training and validation datasets.")
 
-    config_file_path = "src/configs/test_grid_configs.yaml"
+    config_file_path = "src/configs/experiments_shane.yaml"
+    # config_file_path = "src/configs/experiments_shayne.yaml"
 
     search_manager = GridSearchManager(
         config_path=config_file_path, device="auto", seed=42

@@ -8,7 +8,7 @@ base_config:
     max_len: 128
     drop: 0.3
   train:
-    experiment_name: "base_model"
+    experiment_name: "experiment-small-shayne"
     epochs: 3
     lr: 0.00001
     batch_size: 32
@@ -16,9 +16,9 @@ base_config:
     save_steps: 2500
 
 grid_search_params:
-  d_model: [64, 128, 256, 512]
-  n_heads: [1, 2, 4, 8]
-  n_layers: [1, 2, 4, 6]
-  d_ff: [128, 256, 512]
-  lr: [0.00001, 0.00003, 0.00005]
-  batch_size: [8, 16, 32]
+  d_model: [64, 128]
+  n_heads: [1, 2]
+  n_layers: [1, 2]
+  d_ff: [128, 256]
+  lr: [0.00001, 0.00003]
+  batch_size: [32, 64]
