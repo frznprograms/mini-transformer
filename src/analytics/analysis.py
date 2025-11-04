@@ -1,15 +1,17 @@
 import json
 import time
-import pandas as pd
-from pandas.plotting import parallel_coordinates
+from dataclasses import dataclass, field
+from typing import Any, Optional
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from loguru import logger
-from typing import Any, Optional
-from dataclasses import dataclass, field
+from pandas.plotting import parallel_coordinates
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
 from src.utils.decorators import timed_execution
 
 
