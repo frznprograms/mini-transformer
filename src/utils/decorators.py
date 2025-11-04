@@ -15,7 +15,7 @@ def timed_execution(func):
         seconds = elapsed_seconds % 60
 
         logger.info(
-            f"Function executed in: {hours} hours, {minutes} minutes, {seconds:.3f} seconds"
+            f"{func.__name__}() executed in: {hours} hours, {minutes} minutes, {seconds:.3f} seconds"
         )
         return result
 
