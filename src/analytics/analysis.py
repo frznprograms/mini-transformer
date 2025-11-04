@@ -9,6 +9,8 @@ from typing import Any, Optional
 from dataclasses import dataclass, field
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.metrics import silhouette_score
+from src.utils.decorators import timed_execution
 
 
 @dataclass(frozen=True)
@@ -128,8 +130,23 @@ class ResultsAnalyser:
 
         plt.show()
 
-    def get_optimal_n_clusters(self):
-        pass
+    @timed_execution
+    def get_optimal_n_clusters(
+        self, X_scaled: pd.DataFrame, min: int = 2, max=10, random_state: int = 42
+    ) -> int:
+        best_k = 0
+        max_score = float("-inf")
+        for i in range(min, max):
+            k_means = KMeans(n_clusters=i, random_state=random_state).fit(X_scaled)
+            score = silhouette_score(X=X_scaled, labels=k_means.labels_)
+            if score > max_score:
+                max_score = score
+                best_k = i
+
+        logger.info(
+            f"Best k for this case is {best_k} with silhouette score {max_score}."
+        )
+        return best_k
 
     def plot_clusters(
         self,
@@ -151,7 +168,7 @@ class ResultsAnalyser:
         X_scaled = scaler.fit_transform(X)
         logger.success("Scaled input successfully.")
 
-        n = self.get_optimal_n_clusters()
+        n = self.get_optimal_n_clusters(X_scaled=X_scaled)
         k_means = KMeans(n_clusters=n, random_state=random_state)
         logger.info(f"Initialised KMeans with n = {n} clusters.")
 
