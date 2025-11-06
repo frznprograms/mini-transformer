@@ -74,17 +74,22 @@ class ResultsAnalyser:
     ) -> None:
         df_viz = self.data_table.copy()  # type: ignore
         df_viz["final_val_accuracy"] = df_viz["final_val_accuracy"].round(3)
-        df_viz["lr"] = df_viz["params.lr"].astype(str)
+        df_viz["params.lr"] = df_viz["params.lr"].astype(str)
+
+        # scale numeric columns independently
+        numeric_cols = [c for c in cols if c != "params.lr"]
+        scaler = MinMaxScaler()
+        df_viz[numeric_cols] = scaler.fit_transform(df_viz[numeric_cols])
 
         plt.figure(figsize=(10, 6))
         parallel_coordinates(
             df_viz,
             class_column="params.lr",
-            cols=[cols],
+            cols=cols,
             color=["#4c72b0", "#55a868", "#c44e52"],
         )
         plt.title(
-            "Parallel Coordinates — effect of hyperparameters on validation accuracy"
+            "Parallel Coordinates — Effect of Hyperparameters on Validation Accuracy (Normalised)"
         )
         if save_plot:
             if not save_path:
@@ -256,6 +261,6 @@ if __name__ == "__main__":
     # r.view_data_table()
     # best_results = r.get_best_results(min_acc=0.55)
     # print(best_results)
-    # r.plot_parallel_coordinates()
+    r.plot_parallel_coordinates()
     # r.plot_heatmap(var_1="lr", var_2="d_model")
-    r.plot_clusters()
+    # r.plot_clusters()
