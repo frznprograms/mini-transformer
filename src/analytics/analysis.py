@@ -255,12 +255,14 @@ class ResultsAnalyser:
 
 
 if __name__ == "__main__":
-    with open("output/grid_search_results.json", "r") as f:
+    with open("output/combined_results.json", "r") as f:
         data = json.load(f)
-    r = ResultsAnalyser(data=data)
-    # r.view_data_table()
+    r = ResultsAnalyser(data=data)  # type: ignore
+
     # best_results = r.get_best_results(min_acc=0.55)
     # print(best_results)
+
     r.plot_parallel_coordinates()
+
     # r.plot_heatmap(var_1="lr", var_2="d_model")
     # r.plot_clusters()

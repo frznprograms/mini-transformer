@@ -1,0 +1,834 @@
+[
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3651268876368,
+    "final_val_accuracy": 0.2595874417212702
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3622586332982585,
+    "final_val_accuracy": 0.2625702888734879
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3651481136198966,
+    "final_val_accuracy": 0.25955397082913306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.359404433158136,
+    "final_val_accuracy": 0.2658740628150202
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.342508365069666,
+    "final_val_accuracy": 0.26571753717237906
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.1658769970940006,
+    "final_val_accuracy": 0.3435787077872984
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.342658100589629,
+    "final_val_accuracy": 0.26574805475050406
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model64_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.164176323721486,
+    "final_val_accuracy": 0.3421680081275202
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3543267125083553,
+    "final_val_accuracy": 0.26281639837449594
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.315865674326497,
+    "final_val_accuracy": 0.2789099908644153
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3543279074853465,
+    "final_val_accuracy": 0.2627908029863911
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.32260131739801,
+    "final_val_accuracy": 0.2769873834425403
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3334452461811805,
+    "final_val_accuracy": 0.2700096868699597
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 1.9470202023944547,
+    "final_val_accuracy": 0.4065709267893145
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.333603669558802,
+    "final_val_accuracy": 0.26993486958165325
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff128_d_model128_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 1.9376800440011486,
+    "final_val_accuracy": 0.4119203629032258
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.362691105373444,
+    "final_val_accuracy": 0.26038975869455644
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3547058441946582,
+    "final_val_accuracy": 0.2645529470136089
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3627778743543932,
+    "final_val_accuracy": 0.2603572722404234
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3528385239262737,
+    "final_val_accuracy": 0.26663404895413306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3380680411092696,
+    "final_val_accuracy": 0.2682692004788306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.064945718934459,
+    "final_val_accuracy": 0.37356764270413306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3382025562947795,
+    "final_val_accuracy": 0.26831251575100806
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model64_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.096936073514723,
+    "final_val_accuracy": 0.3618114840599798
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3506910262569303,
+    "final_val_accuracy": 0.26339623235887094
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.268250250527936,
+    "final_val_accuracy": 0.30184838079637094
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3506919799312467,
+    "final_val_accuracy": 0.26348778509324594
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.2941796193199773,
+    "final_val_accuracy": 0.29185633505544356
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.326954508020032,
+    "final_val_accuracy": 0.2713376937373992
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 1.8680961949210013,
+    "final_val_accuracy": 0.43115923481602825
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3274164440170413,
+    "final_val_accuracy": 0.2711851058467742
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size32_d_ff256_d_model128_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 32,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 1.8677779556282106,
+    "final_val_accuracy": 0.4311159195438508
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3972731155733906,
+    "final_val_accuracy": 0.2559725853704637
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.400411650057762,
+    "final_val_accuracy": 0.25526280556955644
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.397315971312984,
+    "final_val_accuracy": 0.2559558499243952
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.399678566763478,
+    "final_val_accuracy": 0.25530808971774194
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.353370322335151,
+    "final_val_accuracy": 0.2618870888986895
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3274947789407547,
+    "final_val_accuracy": 0.27618408203125
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3534505040414873,
+    "final_val_accuracy": 0.26183983587449594
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model64_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3221841550642446,
+    "final_val_accuracy": 0.2814734674269153
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.372734227488118,
+    "final_val_accuracy": 0.2599684192288306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.364968445993239,
+    "final_val_accuracy": 0.2630113170992944
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3727926265808845,
+    "final_val_accuracy": 0.2599634970388105
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3635834666990463,
+    "final_val_accuracy": 0.26368467269405244
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.345082909830155,
+    "final_val_accuracy": 0.26478724325856856
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.1114131933258427,
+    "final_val_accuracy": 0.3607423843876008
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3451647412392402,
+    "final_val_accuracy": 0.26484827841481856
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff128_d_model128_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 128,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.107913568135231,
+    "final_val_accuracy": 0.3639437767767137
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3905683871238463,
+    "final_val_accuracy": 0.25711256457913306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3910758783740382,
+    "final_val_accuracy": 0.25691370810231856
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.390644681069159,
+    "final_val_accuracy": 0.2571135490171371
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3886813002247966,
+    "final_val_accuracy": 0.2576106902091734
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3510755800431773,
+    "final_val_accuracy": 0.26255946005544356
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.311847569481019,
+    "final_val_accuracy": 0.2825071273311492
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.351150231976663,
+    "final_val_accuracy": 0.2625023626512097
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model64_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 64,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.314018897471889,
+    "final_val_accuracy": 0.28036695911038306
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr1e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.364580717778975,
+    "final_val_accuracy": 0.2608189736643145
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr1e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.3505872737976814,
+    "final_val_accuracy": 0.2662993400327621
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr1e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3645622653345906,
+    "final_val_accuracy": 0.26072938980594756
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr1e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 1e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.348434482851336,
+    "final_val_accuracy": 0.2668309365549395
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr3e-05_n_heads1_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.341259329549728,
+    "final_val_accuracy": 0.2659026115171371
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr3e-05_n_heads1_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 1,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.012398040102374,
+    "final_val_accuracy": 0.3895913400957661
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr3e-05_n_heads2_n_layers1",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 1
+    },
+    "final_val_loss": 2.3413342602791323,
+    "final_val_accuracy": 0.2659242691532258
+  },
+  {
+    "run_name": "experiment-small-shayne_batch_size64_d_ff256_d_model128_lr3e-05_n_heads2_n_layers2",
+    "params": {
+      "batch_size": 64,
+      "d_ff": 256,
+      "d_model": 128,
+      "lr": 3e-5,
+      "n_heads": 2,
+      "n_layers": 2
+    },
+    "final_val_loss": 2.036158153126317,
+    "final_val_accuracy": 0.38273866714969756
+  }
+]
