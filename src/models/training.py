@@ -102,13 +102,9 @@ class ModelTrainer:
 
             # implement early stopping for potential overfitting
             if early_stop:
-                if epoch > 0:
-                    # compare current and previous epoch
-                    if self.avg_loss_history[-1] >= self.avg_loss_history[-2]:
-                        logger.warning(
-                            "Stopping training early as average epoch loss has either stagnated or worsened."
-                        )
-                    return {}
+                self._check_potential_convergence(
+                    step=step, tol_steps=tol_steps, tol=tol
+                )
 
             # validation loop
             if val_dataset is not None:
