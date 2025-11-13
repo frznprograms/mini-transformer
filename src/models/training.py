@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 import matplotlib.pyplot as plt
 import torch
@@ -65,11 +66,10 @@ class ModelTrainer:
         step = 0
         for epoch in range(num_epochs):
             total_loss = 0.0
-
             progress_bar = tqdm(
                 dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
             )
-
+            # main training loop
             for x, y in progress_bar:
                 x, y = x.to(self.device), y.to(self.device)
 
@@ -88,23 +88,28 @@ class ModelTrainer:
 
                 self._save_model_checkpoint(step=step, pbar=progress_bar)
 
+                # implement early stopping for convergence
                 if early_stop and self.loss_history and step % tol_steps == 0:
-                    # implement early stopping
-                    loss_after_tol_steps = (
-                        self.loss_history[step - tol_steps]
-                        - self.loss_history[step - 1]
+                    self._check_potential_convergence(
+                        step=step, tol_steps=tol_steps, tol=tol
                     )
-                    if loss_after_tol_steps < tol:
-                        logger.warning(
-                            f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
-                        )
-                        return {}
 
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
             logger.info(
                 f"Epoch [{epoch + 1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
             )
+
+            # implement early stopping for potential overfitting
+            if early_stop:
+                if epoch > 0:
+                    # compare current and previous epoch
+                    if self.avg_loss_history[-1] >= self.avg_loss_history[-2]:
+                        logger.warning(
+                            "Stopping training early as average epoch loss has either stagnated or worsened."
+                        )
+                    return {}
+
             # validation loop
             if val_dataset is not None:
                 self.evaluator = ModelEvaluator(
@@ -129,6 +134,30 @@ class ModelTrainer:
         final_acc = self.val_accuracy[-1] if self.val_accuracy else 0.0
 
         return {"loss": final_loss, "accuracy": final_acc}
+
+    def _check_potential_convergence(
+        self, step: int, tol_steps: int, tol: float
+    ) -> Union[dict, None]:
+        # implement early stopping for convergence
+        loss_after_tol_steps = (
+            self.loss_history[step - tol_steps] - self.loss_history[step - 1]
+        )
+        if loss_after_tol_steps < tol:
+            logger.warning(
+                f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+            )
+            return {}
+        return None
+
+    def _check_potential_overfitting(self, epoch: int) -> Union[dict, None]:
+        if epoch > 0:
+            # compare current and previous epoch
+            if self.avg_loss_history[-1] >= self.avg_loss_history[-2]:
+                logger.warning(
+                    "Stopping training early as average epoch loss has either stagnated or worsened."
+                )
+            return {}
+        return None
 
     def _save_model_checkpoint(self, step: int, pbar):
         experiment_name = self.train_configs.get(
