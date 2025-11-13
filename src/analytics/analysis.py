@@ -262,7 +262,27 @@ if __name__ == "__main__":
     # best_results = r.get_best_results(min_acc=0.55)
     # print(best_results)
 
-    r.plot_parallel_coordinates()
+    # r.plot_parallel_coordinates(save_plot=True, save_path="plots/parallel_plot_small")
 
-    # r.plot_heatmap(var_1="lr", var_2="d_model")
-    # r.plot_clusters()
+    r.plot_heatmap(
+        var_1="lr",
+        var_2="d_model",
+        save_plot=True,
+        save_path="plots/heatmap_lr_dmodel_small",
+    )
+    r.plot_heatmap(
+        var_1="lr", var_2="d_ff", save_plot=True, save_path="plots/heatmap_lr_dff_small"
+    )
+    r.plot_heatmap(
+        var_1="lr",
+        var_2="n_heads",
+        save_plot=True,
+        save_path="plots/heatmap_lr_nheads_small",
+    )
+    r.plot_heatmap(
+        var_1="lr",
+        var_2="n_layers",
+        save_plot=True,
+        save_path="plots/heatmap_lr_nlayers_small",
+    )
+    r.plot_clusters(save_plot=True, save_path="plots/clusters_small")
