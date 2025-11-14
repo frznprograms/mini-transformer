@@ -4,13 +4,15 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
+import yaml
 from loguru import logger
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
+from src.datasets.segment import SegmentedCharDataset
 from src.models.eval import ModelEvaluator
 from src.models.model import MiniTransformer
-from src.utils.helpers import set_device, set_seeds
+from src.utils.helpers import load_data_splits, set_device, set_seeds
 
 
 @dataclass
@@ -44,12 +46,13 @@ class ModelTrainer:
     @logger.catch(message="Unable to complete model training.", reraise=True)
     def train(
         self,
-        train_dataset,
-        val_dataset,
+        train_dataset: SegmentedCharDataset,
+        val_dataset: SegmentedCharDataset,
         plot_loss: bool = False,
         early_stop: bool = False,
         tol: float = 0.01,
         tol_steps: int = 1000,
+        patience: int = 3,
     ) -> dict:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
@@ -65,11 +68,10 @@ class ModelTrainer:
         step = 0
         for epoch in range(num_epochs):
             total_loss = 0.0
-
             progress_bar = tqdm(
                 dataloader, desc=f"Epoch {epoch + 1}/{num_epochs}", leave=False
             )
-
+            # main training loop
             for x, y in progress_bar:
                 x, y = x.to(self.device), y.to(self.device)
 
@@ -88,23 +90,50 @@ class ModelTrainer:
 
                 self._save_model_checkpoint(step=step, pbar=progress_bar)
 
+                # implement early stopping for convergence
                 if early_stop and self.loss_history and step % tol_steps == 0:
-                    # implement early stopping
-                    loss_after_tol_steps = (
-                        self.loss_history[step - tol_steps]
-                        - self.loss_history[step - 1]
-                    )
-                    if loss_after_tol_steps < tol:
+                    if self._check_potential_convergence(
+                        step=step, tol_steps=tol_steps, tol=tol
+                    ):
                         logger.warning(
-                            f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+                            "Stopping training as model may have converged. Check tolerance level if this is unexpected."
                         )
-                        return {}
+                        logger.info(
+                            "Returned accuracy value will be 0.0. Perform evaluation on this model checkpoint separately if needed."
+                        )
+                        if plot_loss:
+                            self.plot_loss()
+
+                        return {
+                            "loss": self.avg_loss_history[-1]
+                            if self.avg_loss_history
+                            else total_loss / n,
+                            "accuracy": self.avg_val_history[-1]
+                            if self.avg_val_history
+                            else 0.0,
+                        }
 
             avg_loss = total_loss / n
             self.avg_loss_history.append(avg_loss)
             logger.info(
                 f"Epoch [{epoch + 1}/{num_epochs}] | Average Loss: {avg_loss:.4f}"
             )
+
+            # implement early stopping for potential overfitting
+            if early_stop and self._check_potential_overfitting(
+                epoch=epoch, patience=patience
+            ):
+                logger.warning(
+                    "Stopping training due to potential overfitting - model patience exceeded. Check patience if this is unexpected."
+                )
+                if plot_loss:
+                    self.plot_loss()
+                # return most recent performance
+                return {
+                    "loss": self.avg_loss_history[-1],
+                    "accuracy": self.avg_val_history[-1],
+                }
+
             # validation loop
             if val_dataset is not None:
                 self.evaluator = ModelEvaluator(
@@ -129,6 +158,33 @@ class ModelTrainer:
         final_acc = self.val_accuracy[-1] if self.val_accuracy else 0.0
 
         return {"loss": final_loss, "accuracy": final_acc}
+
+    def _check_potential_convergence(
+        self, step: int, tol_steps: int, tol: float
+    ) -> bool:
+        # implement early stopping for convergence
+        loss_after_tol_steps = (
+            self.loss_history[step - tol_steps] - self.loss_history[step - 1]
+        )
+        if loss_after_tol_steps < tol:
+            logger.warning(
+                f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+            )
+            return True
+        return False
+
+    def _check_potential_overfitting(self, epoch: int, patience: int) -> bool:
+        if epoch == 0:
+            return False
+        # compare current and previous epoch
+        if self.avg_loss_history[-1] >= self.avg_loss_history[-2]:
+            self.bad_epochs += 1
+            logger.warning(
+                f"Loss did not improve. Numnber of bad epochs: {self.bad_epochs}"
+            )
+        else:
+            self.bad_epochs = 0
+        return self.bad_epochs >= patience
 
     def _save_model_checkpoint(self, step: int, pbar):
         experiment_name = self.train_configs.get(
@@ -217,24 +273,27 @@ class ModelTrainer:
         plt.show()
 
 
-# if __name__ == "__main__":
-#     mt = ModelTrainer()
-#     # print(f"Model Configs: {mt.model_configs}")
-#     # print(f"Train Configs: {mt.train_configs}")
-#     # print(f"Device: {mt.device}")
-#     # print(f"Optimizer: {mt.optimizer}")
-#     # print(f"Criterion/Loss Function: {mt.criterion}")
-#     # print(f"Model: {mt.model}")
-#
-#     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
-#     mt = ModelTrainer(device="cpu", config_path="src/configs/all_configs.yaml", seed=42)
-#
-#     mt.train(
-#         train_dataset=train,
-#         val_dataset=val,
-#         plot_loss=False,
-#         early_stop=True,
-#         tol=1.0,  # too high, just to test early stopping
-#         tol_steps=100,
-#     )
-#     mt.plot_loss()
+if __name__ == "__main__":
+    #     mt = ModelTrainer()
+    #     # print(f"Model Configs: {mt.model_configs}")
+    #     # print(f"Train Configs: {mt.train_configs}")
+    #     # print(f"Device: {mt.device}")
+    #     # print(f"Optimizer: {mt.optimizer}")
+    #     # print(f"Criterion/Loss Function: {mt.criterion}")
+    #     # print(f"Model: {mt.model}")
+    #
+    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    with open("src/configs/test_configs.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    mt = ModelTrainer(device="cpu", config=config, seed=42)
+
+    mt.train(
+        train_dataset=train,
+        val_dataset=val,
+        plot_loss=False,
+        early_stop=True,
+        tol=1.0,  # too high, just to test early stopping
+        tol_steps=100,
+        patience=1,
+    )
+    # mt.plot_loss()
