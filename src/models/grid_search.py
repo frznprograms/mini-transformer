@@ -6,6 +6,7 @@ from loguru import logger
 from sklearn.model_selection import ParameterGrid
 
 from src.configs.logger_config import LoggedProcess
+from src.datasets.segment import SegmentedCharDataset
 from src.models.training import ModelTrainer
 from src.utils.decorators import timed_execution
 from src.utils.helpers import load_data_splits
@@ -40,7 +41,16 @@ class GridSearchManager(LoggedProcess):
         logger.success("GridSearchManager initialized")
 
     @timed_execution
-    def run(self, train_dataset, val_dataset):
+    def run(
+        self,
+        train_dataset: SegmentedCharDataset,
+        val_dataset: SegmentedCharDataset,
+        plot_loss: bool = False,
+        early_stop: bool = True,
+        tol: float = 0.005,
+        tol_steps: int = 1000,
+        patience: int = 2,
+    ):
         ## combinations of parameters
         all_param_combinations = list(ParameterGrid(self.grid_params))
         total_runs = len(all_param_combinations)
@@ -70,7 +80,11 @@ class GridSearchManager(LoggedProcess):
                 metrics = trainer.train(
                     train_dataset=train_dataset,
                     val_dataset=val_dataset,
-                    plot_loss=False,
+                    plot_loss=plot_loss,
+                    early_stop=early_stop,
+                    tol=tol,
+                    tol_steps=tol_steps,
+                    patience=patience,
                 )
 
                 ## logging results
