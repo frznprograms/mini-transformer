@@ -36,6 +36,8 @@ And if you would still prefer to use the original `pip` or `pip3` package manage
 pip install -r requirements.txt
 ```
 
+TODO: update requirements.txt once project is done
+
 #### Running Inference
 
 You may also wish to simply deploy the model for direct inference without any training. For this purpose, we have left some of the better-performing model checkpoints under the checkpoints/ directory. The checkpoints have been given names based on the parameters they used, so they can be called as such in code to run inference. Please refer to the sample below to run inference using a model checkpoint titled "test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4":
@@ -50,9 +52,13 @@ Of course, for my non-`uv` users, you may instead replace any `uv` commands for 
 python run -m src.models.inference
 ```
 
+TODO: implement pure inference pipeline
+
 ### Reproducing Experiments
 
 To reproduce our best-performing experiment, execute the following:
+
+TODO: add required code for these sections
 
 ```{bash}
 some_code wow
