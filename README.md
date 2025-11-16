@@ -1,5 +1,17 @@
-<h1 style="text-align: center;"> Mini Transformer for Next Word Prediction </h1>
+<h1 style="text-align: center;">in-shane-ity AI</h1>
 <h2 style="text-align: center;"> Mini Transformer for Next Word Prediction </h2>
+
+#### Description
+
+This project was completed as part of our submission for DSA4212-2510. In this project, we explore some of the intricacies of deep learning, with a particular focus on model design, training methodology, and optimisation methods.
+
+We conducted a series of experiments in an attempt to maximise the performance of out model on **next-character prediction** tasks. Our particular model architecture is similar to NanoGPT, but we have taken pains to make the training loop, model design and experiments as accesible and extensible as possible to allow others to play with it.
+
+#### Results
+
+| Model Name/Checkpoint | Configurations | Accuracy |
+| --------------------- | -------------- | -------- |
+| Item1                 | Item1          | Item1    |
 
 #### Authors
 
@@ -40,6 +52,8 @@ TODO: update requirements.txt once project is done
 
 #### Running Inference
 
+**Note: All our imports are absolute to avoid strange import errors in Python, and all scripts are run as modules in testing using the `-m` flag. We recommend you do the same.**
+
 You may also wish to simply deploy the model for direct inference without any training. For this purpose, we have left some of the better-performing model checkpoints under the checkpoints/ directory. The checkpoints have been given names based on the parameters they used, so they can be called as such in code to run inference. Please refer to the sample below to run inference using a model checkpoint titled "test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4":
 
 ```{bash}
@@ -64,36 +78,117 @@ TODO: add required code for these sections
 some_code wow
 ```
 
-For those who wish to train a model using our architecture text8 dataset, we have made data preparation and model hyperparameters easily customisable, however you will need to configure this yourself, and we cannot guarantee high performance off-the-shelf. You may need to run several experiments with different configurations before you achieve strong performance.
+Do note that the above code will run a full **grid search** on the stated hyper-parameters and may time a while to run, depending on your hardware. If you do not have a GPU on your device, we recommend using Google Colab, Kaggle or other free compute resources.
+
+For those who wish to train a model using our architecture text8 dataset, we have made data preparation and model hyper-parameters easily customisable, however you will need to configure this yourself, and we cannot guarantee high performance off-the-shelf. You may need to run several experiments with different configurations before you achieve strong performance.
 
 Below is an example of how to create dataset splits in our implementation:
 
 ```{python}
-prepare_dataset_somehow()
+from src.utils.helpers import save_text8_splits
+
+
+with open("data/raw/text8", "r") as f:
+    full_text = f.read()
+
+max_size = 100000 # set  your preferred size here
+data = full_text[:max_size]
+
+save_text8_splits(
+    text=data,
+    path="data/small/small_data.pt", # change path as needed
+    ratios=(0.8, 0.1, 0.1),
+    segment_len=4096,
+    context_size=128,
+    seed=1,
+)
 ```
 
-The next step after data preparation would be to set up the needed model hyperparameters. We make this easy using YAML files. You may save your desired configuration anywhere as long as it follows the correct format provided, but for cleanliness we recommend saving all configurations to the `configs/` folder under `src/`.
-
-```{yaml}
-model:
-  param_1:
-  param_2:
-
-train:
-  param_1:
-  param_2:
-```
-
-Once done, you can move on to training the model on your prepared dataset:
+This will create the dataset of the desired size and save it to the directory you specify in the `save_path` parameter. To load the dataset splits for downstream tasks, you may follow the simple implementation below:
 
 ```{python}
-train_model()
+from src.utils.helpers import load_data_splits, decode_dataset_texts
+
+# get dataset splits
+train, val, test, encoded = load_data_splits(path="data/small/small_data.pt") # change path as needed
+
+# optionally, view short sections of the text with:
+print("Training text preview:\n")
+print(decode_dataset_text(train, max_chars=300))
+
+print("\nValidation text preview:\n")
+print(decode_dataset_text(val, max_chars=300))
+
+print("\nTest text preview:\n")
+print(decode_dataset_text(test, max_chars=300))
+```
+
+The next step after data preparation would be to set up the needed model hyper-parameters. We make this easy using YAML files. You may save your desired configuration anywhere as long as it follows the correct format provided, but for cleanliness we recommend saving all configurations to the `configs/` folder under `src/`. An example has been provided below for your reference:
+
+```{yaml}
+# configuration for SINGLE experiment
+model:
+  vocab_size: 27
+  d_model: 128
+  n_heads: 4
+  d_ff: 512
+  n_layers: 2
+  max_len: 128
+  drop: 0.3
+train:
+  experiment_name: "trial"
+  epochs: 3
+  lr: 0.00001
+  batch_size: 32
+  save_strategy: "steps"
+  save_steps: 2500
+```
+
+Once done, you can move on to training the model on your prepared dataset. Note that here we only provide the basic parameters. Please refer to the source code <insert link here> for more details and other ways to customise training:
+
+```{python}
+from src.models.training import ModelTrainer
+
+mt = ModelTrainer(device="auto", config=config, seed=42)
+
+mt.train(
+    train_dataset=train,
+    val_dataset=val,
+    plot_loss=True,
+)
+```
+
+You may also wish to run a grid search on different combinations of parameters. If so, you may specify a set of parameters in a YAML file as follows, adding and removing from the parameter lists as needed:
+
+```{yaml}
+grid_search_params:
+  d_model: [64, 128]
+  n_heads: [1, 2]
+  n_layers: [1, 2]
+  d_ff: [128, 256]
+  lr: [0.00001, 0.00003]
+  batch_size: [32, 64]
+
+```
+
+Then run a grid search on the specified parameters:
+
+```{python}
+from src.models.grid_search import GridSearchManager
+
+config_file_path = "src/configs/my_configs.yaml"
+
+search_manager = GridSearchManager(
+    config_path=config_file_path, device="auto", seed=42
+)
+
+search_manager.run(train, val)
 ```
 
 #### Project Structure
 
 Please refer to the diagram below for an overview of our project structure and what each component handles.
-.
+`.
 ├── checkpoints
 │   ├── experiment-small-shane
 │   ├── test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4
@@ -147,7 +242,7 @@ Please refer to the diagram below for an overview of our project structure and w
 │   └── utils
 │   ├── decorators.py
 │   └── helpers.py
-└── uv.lock
+└── uv.lock`
 
 #### Conceptual Overview
 
