@@ -248,6 +248,8 @@ Please refer to the diagram below for an overview of our project structure and w
 
 #### References and Citations
 
+In this section, we include references in our research, even if they were not used in the actual/final implementation.
+
 ```
 @misc{hoffmann2022trainingcomputeoptimallargelanguage,
       title={Training Compute-Optimal Large Language Models},
