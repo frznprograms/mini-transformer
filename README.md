@@ -48,23 +48,7 @@ pip install -r requirements.txt
 
 TODO: update requirements.txt once project is done
 
-#### Running Inference
-
 **Note: All our imports are absolute to avoid strange import errors in Python, and all scripts are run as modules in testing using the `-m` flag. We recommend you do the same.**
-
-You may also wish to simply deploy the model for direct inference without any training. For this purpose, we have left some of the better-performing model checkpoints under the checkpoints/ directory. The checkpoints have been given names based on the parameters they used, so they can be called as such in code to run inference. Please refer to the sample below to run inference using a model checkpoint titled "test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4":
-
-```{bash}
-uv run -m src.models.inference
-```
-
-Of course, for my non-`uv` users, you may instead replace any `uv` commands for running scripts with the `python` command:
-
-```{bash}
-python run -m src.models.inference
-```
-
-TODO: implement pure inference pipeline
 
 ### Reproducing Experiments
 
