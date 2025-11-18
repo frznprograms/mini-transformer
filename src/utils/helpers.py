@@ -1,12 +1,12 @@
 import random
 from typing import Optional
+
+import numpy as np
 import torch
 from loguru import logger
-import numpy as np
 from tqdm.auto import tqdm
 
 from src.datasets.segment import SegmentedCharDataset
-
 
 VOCAB = list("abcdefghijklmnopqrstuvwxyz ")
 STOI = {ch: i for i, ch in enumerate(VOCAB)}
