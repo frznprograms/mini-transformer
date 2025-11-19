@@ -1,5 +1,6 @@
-from src.utils.helpers import save_text8_splits
 from loguru import logger
+
+from src.utils.helpers import save_text8_splits
 
 if __name__ == "__main__":
     logger.warning(
@@ -9,14 +10,14 @@ if __name__ == "__main__":
     with open("data/raw/text8", "r") as f:
         full_text = f.read()
 
-    max_size = 100000
+    max_size = 500000
     data = full_text[:max_size]
 
     save_text8_splits(
         text=data,
-        path="data/small/small_data.pt",
+        path="data/medium/small_medium_data.pt",
         ratios=(0.8, 0.1, 0.1),
-        segment_len=4096,
+        segment_len=2048,
         context_size=128,
         seed=1,
     )
