@@ -1,11 +1,11 @@
 <h1 style="text-align: center;">in-shane-ity AI</h1>
-<h2 style="text-align: center;"> Mini Transformer for Next Word Prediction </h2>
+<h3 style="text-align: center;"> Mini Transformer for Next Word Prediction </h3>
 
 #### Description
 
 This project was completed as part of our submission for DSA4212-2510. In this project, we explore some of the intricacies of deep learning, with a particular focus on model design, training methodology, and optimisation methods.
 
-We conducted a series of experiments in an attempt to maximise the performance of out model on **next-character prediction** tasks. Our particular model architecture is similar to NanoGPT, but we have taken pains to make the training loop, model design and experiments as accesible and extensible as possible to allow others to play with it.
+We conducted a series of experiments in an attempt to maximise the performance of out model on **next-character prediction** tasks. Our particular model architecture is similar to NanoGPT(see a brief summary of NanoGPT by Shawn Chumbar here: <https://medium.com/@shawn.chumbar/understanding-nanogpt-a-deep-dive-into-transformer-architecture-implementation-9a7167b7d58c>), but we have taken pains to make the training loop, model design and experiments as accesible and extensible as possible to allow others to play with it.
 
 #### Results
 
@@ -21,8 +21,6 @@ We conducted a series of experiments in an attempt to maximise the performance o
 #### NUS DSA4212-2510 Course Coordinator
 
 1. Prof. Alexander Thiery
-
-**Disclaimer**: We encourage use of our repository to support learning and deepening interests in machine learning/ deep learning. However, please do not reproduce our work as your own. Thanks, and we hope we like what you see here!
 
 #### Setup Instructions
 
@@ -50,23 +48,7 @@ pip install -r requirements.txt
 
 TODO: update requirements.txt once project is done
 
-#### Running Inference
-
 **Note: All our imports are absolute to avoid strange import errors in Python, and all scripts are run as modules in testing using the `-m` flag. We recommend you do the same.**
-
-You may also wish to simply deploy the model for direct inference without any training. For this purpose, we have left some of the better-performing model checkpoints under the checkpoints/ directory. The checkpoints have been given names based on the parameters they used, so they can be called as such in code to run inference. Please refer to the sample below to run inference using a model checkpoint titled "test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4":
-
-```{bash}
-uv run -m src.models.inference
-```
-
-Of course, for my non-`uv` users, you may instead replace any `uv` commands for running scripts with the `python` command:
-
-```{bash}
-python run -m src.models.inference
-```
-
-TODO: implement pure inference pipeline
 
 ### Reproducing Experiments
 
@@ -188,7 +170,8 @@ search_manager.run(train, val)
 #### Project Structure
 
 Please refer to the diagram below for an overview of our project structure and what each component handles.
-`.
+
+```.
 ├── checkpoints
 │   ├── experiment-small-shane
 │   ├── test-experiment-small-shane_batch_size32_d_ff256_d_model256_lr3e-05_n_heads4_n_layers4
@@ -242,8 +225,64 @@ Please refer to the diagram below for an overview of our project structure and w
 │   └── utils
 │   ├── decorators.py
 │   └── helpers.py
-└── uv.lock`
+└── uv.lock
+```
 
 #### Conceptual Overview
 
 #### References and Citations
+
+In this section, we include references in our research, even if they were not used in the actual/final implementation.
+
+```
+@misc{hoffmann2022trainingcomputeoptimallargelanguage,
+      title={Training Compute-Optimal Large Language Models},
+      author={Jordan Hoffmann and Sebastian Borgeaud and Arthur Mensch and Elena Buchatskaya and Trevor Cai and Eliza Rutherford and Diego de Las Casas and Lisa Anne Hendricks and Johannes Welbl and Aidan Clark and Tom Hennigan and Eric Noland and Katie Millican and George van den Driessche and Bogdan Damoc and Aurelia Guy and Simon Osindero and Karen Simonyan and Erich Elsen and Jack W. Rae and Oriol Vinyals and Laurent Sifre},
+      year={2022},
+      eprint={2203.15556},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2203.15556},
+}
+
+@misc{alrfou2018characterlevellanguagemodelingdeeper,
+      title={Character-Level Language Modeling with Deeper Self-Attention},
+      author={Rami Al-Rfou and Dokook Choe and Noah Constant and Mandy Guo and Llion Jones},
+      year={2018},
+      eprint={1808.04444},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/1808.04444},
+}
+
+@misc{vaswani2023attentionneed,
+      title={Attention Is All You Need},
+      author={Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and Lukasz Kaiser and Illia Polosukhin},
+      year={2023},
+      eprint={1706.03762},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/1706.03762},
+}
+
+@misc{shaw2018selfattentionrelativepositionrepresentations,
+      title={Self-Attention with Relative Position Representations},
+      author={Peter Shaw and Jakob Uszkoreit and Ashish Vaswani},
+      year={2018},
+      eprint={1803.02155},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/1803.02155},
+}
+
+@misc{su2023roformerenhancedtransformerrotary,
+      title={RoFormer: Enhanced Transformer with Rotary Position Embedding},
+      author={Jianlin Su and Yu Lu and Shengfeng Pan and Ahmed Murtadha and Bo Wen and Yunfeng Liu},
+      year={2023},
+      eprint={2104.09864},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2104.09864},
+}
+
+```
