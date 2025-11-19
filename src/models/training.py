@@ -6,13 +6,13 @@ import torch
 import torch.nn as nn
 import yaml
 from loguru import logger
-from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
 from src.datasets.segment import SegmentedCharDataset
 from src.models.eval import ModelEvaluator
-from src.models.model import MiniTransformer
+from src.models.model_v2 import MiniTransformerV2
 from src.utils.helpers import load_data_splits, set_device, set_seeds
 
 
@@ -31,7 +31,7 @@ class ModelTrainer:
 
         self.model_configs = configs["model"]
         self.train_configs = configs["train"]
-        self.model = MiniTransformer(**self.model_configs).to(self.device)
+        self.model = MiniTransformerV2(**self.model_configs).to(self.device)
         self.optimizer = torch.optim.Adam(
             self.model.parameters(), lr=self.train_configs["lr"]
         )
@@ -42,9 +42,7 @@ class ModelTrainer:
         self.scheduler = None
         if self.train_configs.get("scheduler") == "cosine":
             self.scheduler = CosineAnnealingLR(
-                self.optimizer,
-                T_max=self.train_configs["epochs"],
-                eta_min=1e-6
+                self.optimizer, T_max=self.train_configs["epochs"], eta_min=1e-6
             )
             logger.info("Using CosineAnnealingLR scheduler.")
         self.loss_history = []
@@ -158,8 +156,8 @@ class ModelTrainer:
                 self.val_accuracy.append(accuracy)
             if self.scheduler:
                 self.scheduler.step()
-                current_lr = self.optimizer.param_groups[0]['lr']
-                logger.info(f"Epoch {epoch+1} complete. New LR: {current_lr:.8f}")
+                current_lr = self.optimizer.param_groups[0]["lr"]
+                logger.info(f"Epoch {epoch + 1} complete. New LR: {current_lr:.8f}")
 
         self._save_final_checkpoint()
         logger.success("Training complete.")
@@ -286,28 +284,29 @@ class ModelTrainer:
         plt.show()
 
 
-# if __name__ == "__main__":
-#     #     mt = ModelTrainer()
-#     #     # print(f"Model Configs: {mt.model_configs}")
-#     #     # print(f"Train Configs: {mt.train_configs}")
-#     #     # print(f"Device: {mt.device}")
-#     #     # print(f"Optimizer: {mt.optimizer}")
-#     #     # print(f"Criterion/Loss Function: {mt.criterion}")
-#     #     # print(f"Model: {mt.model}")
-#     #
-#     train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
-#     with open("src/configs/test_configs.yaml", "r") as f:
-#         config = yaml.safe_load(f)
-#     mt = ModelTrainer(device="cpu", config=config, seed=42)
+if __name__ == "__main__":
+    # mt = ModelTrainer()
+    # print(f"Model Configs: {mt.model_configs}")
+    # print(f"Train Configs: {mt.train_configs}")
+    # print(f"Device: {mt.device}")
+    # print(f"Optimizer: {mt.optimizer}")
+    # print(f"Criterion/Loss Function: {mt.criterion}")
+    # print(f"Model: {mt.model}")
 
-#     mt.train(
-#         train_dataset=train,
-#         val_dataset=val,
-#         plot_loss=False,
-#         early_stop=True,
-#         tol=1.0,  # too high, just to test early stopping
-#         tol_steps=100,
-#         patience=1,
-#     )
-#     # mt.plot_loss()
+    train, val, test, encoded = load_data_splits(
+        path="data/medium/small_medium_data.pt"
+    )
+    with open("src/configs/final_configs.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    mt = ModelTrainer(device="auto", config=config, seed=42)
 
+    mt.train(
+        train_dataset=train,
+        val_dataset=val,
+        plot_loss=False,
+        early_stop=True,
+        # tol=1.0,  # too high, just to test early stopping
+        # tol_steps=100,
+        # patience=1,
+    )
+    mt.plot_loss()
