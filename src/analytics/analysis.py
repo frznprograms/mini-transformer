@@ -41,15 +41,18 @@ class ResultsAnalyser:
     def get_best_results(
         self,
         min_acc: float,
-        min_loss: Optional[float] = None,
+        max_loss: Optional[float] = None,
         save_to_local: bool = False,
     ) -> list[dict[str, Any]]:
         best_results = []
         for entry in self.data:
             if entry["final_val_accuracy"] >= min_acc:
-                if min_loss and entry["final_val_loss"] >= min_loss:
-                    best_results.append(entry)
-                    continue
+                if max_loss is not None:
+                    if entry['final_val_loss'] <= max_loss:
+                        best_results.append(entry)
+                # if max_loss and entry["final_val_loss"] <= max_loss:
+                #     best_results.append(entry)
+                #     continue
                 else:
                     best_results.append(entry)
 
@@ -59,6 +62,46 @@ class ResultsAnalyser:
                 json.dump(best_results, f, indent=4)
 
         return best_results
+    
+    def rank_loss_acc(
+            self,
+            results: list[dict],
+            w_acc: float = 0.5,
+            w_loss: float = 0.5,
+    ) -> list[dict]:
+        """
+        Ranks configurations obtained from get_best_result(min_acc, max_loss).
+        Takes loss and accuracy into account by normalizing and adding them up.
+        Range of final measure = [0, 1]
+        """
+        if not results:
+            return []
+        
+        accuracies = [r['final_val_accuracy'] for r in results]
+        losses = [r['final_val_loss'] for r in results]
+
+        min_acc, max_loss = min(accuracies), max(losses) # worst scores among top k configurations
+        max_acc, min_loss = max(accuracies), min(losses) # best scores among top k configurations
+
+        acc_range = max_acc - min_acc if max_acc != min_acc else 1.0
+        loss_range = max_loss - min_loss if max_loss != min_loss else 1.0
+
+        scored_results = []
+
+        for r in results:
+            norm_acc = (r['final_val_accuracy'] - min_acc)/acc_range
+            norm_loss = 1 - ((r['final_val_loss'] - min_loss)/loss_range)
+
+            weighted_sum = (w_acc * norm_acc) + (w_loss * norm_loss)
+
+            r_copy = r.copy()
+            r_copy['_combined_score'] = weighted_sum
+            scored_results.append(r_copy)
+        ranked = sorted(scored_results, key=lambda x: x['_combined_score'], reverse=True)
+        for r in ranked:
+            del[r['_combined_score']]
+        return ranked
+
 
     def plot_parallel_coordinates(
         self,
