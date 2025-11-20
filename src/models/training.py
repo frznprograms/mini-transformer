@@ -12,7 +12,7 @@ from tqdm.auto import tqdm
 
 from src.datasets.segment import SegmentedCharDataset
 from src.models.eval import ModelEvaluator
-from src.models.model_v2 import MiniTransformerV2
+from src.models.model_v3 import MiniTransformerV3
 from src.utils.helpers import load_data_splits, set_device, set_seeds
 
 
@@ -31,7 +31,7 @@ class ModelTrainer:
 
         self.model_configs = configs["model"]
         self.train_configs = configs["train"]
-        self.model = MiniTransformerV2(**self.model_configs).to(self.device)
+        self.model = MiniTransformerV3(**self.model_configs).to(self.device)
         self.optimizer = torch.optim.Adam(
             self.model.parameters(), lr=self.train_configs["lr"]
         )
@@ -59,7 +59,7 @@ class ModelTrainer:
         early_stop: bool = False,
         tol: float = 0.01,
         tol_steps: int = 1000,
-        patience: int = 3,
+        patience: int = 1,
     ) -> dict:
         self.model.train()
         num_epochs = self.train_configs["epochs"]
@@ -127,11 +127,10 @@ class ModelTrainer:
             )
 
             # implement early stopping for potential overfitting
-            if early_stop and self._check_potential_overfitting(
-                epoch=epoch, patience=patience
-            ):
+            if early_stop and self._check_potential_overfitting(patience=patience):
                 logger.warning(
-                    "Stopping training due to potential overfitting - model patience exceeded. Check patience if this is unexpected."
+                    "Stopping training due to potential overfitting - model patience exceeded,"
+                    "Check patience if this is unexpected."
                 )
                 if plot_loss:
                     self.plot_loss()
@@ -173,28 +172,42 @@ class ModelTrainer:
     def _check_potential_convergence(
         self, step: int, tol_steps: int, tol: float
     ) -> bool:
-        # implement early stopping for convergence
-        loss_after_tol_steps = (
-            self.loss_history[step - tol_steps] - self.loss_history[step - 1]
-        )
-        if loss_after_tol_steps < tol:
+        # Not enough steps completed yet
+        if len(self.loss_history) < tol_steps:
+            return False
+
+        loss_before = self.loss_history[step - tol_steps]
+        loss_now = self.loss_history[step - 1]
+        reduction = loss_before - loss_now
+
+        if reduction < tol:
             logger.warning(
-                f"Stopping training at step {step} as loss has not been reduced by the set tolerance level of {tol} in {tol_steps} steps. Loss was only reduced by {loss_after_tol_steps:.4f} instead."
+                f"Loss improved by only {reduction:.6f} in the last {tol_steps} steps "
+                f"(tol={tol}). Possible convergence."
             )
             return True
+
         return False
 
-    def _check_potential_overfitting(self, epoch: int, patience: int) -> bool:
-        if epoch == 0:
+    def _check_potential_overfitting(self, patience: int = 1) -> bool:
+        if not hasattr(self, "bad_epochs"):
+            self.bad_epochs = 0
+
+        # Need at least 2 validation losses
+        if len(self.avg_val_history) < 2:
             return False
-        # compare current and previous epoch
-        if self.avg_loss_history[-1] >= self.avg_loss_history[-2]:
+        prev_loss = self.avg_val_history[-2]
+        curr_loss = self.avg_val_history[-1]
+
+        if curr_loss >= prev_loss:
             self.bad_epochs += 1
             logger.warning(
-                f"Loss did not improve. Numnber of bad epochs: {self.bad_epochs}"
+                f"Validation loss did not improve (prev={prev_loss:.4f}, "
+                f"curr={curr_loss:.4f}). Bad epochs: {self.bad_epochs}"
             )
         else:
-            self.bad_epochs = 0
+            self.bad_epochs = 0  # reset patience
+
         return self.bad_epochs >= patience
 
     def _save_model_checkpoint(self, step: int, pbar):

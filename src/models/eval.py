@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
 from src.datasets.segment import SegmentedCharDataset
-from src.models.model_v2 import MiniTransformerV2
+from src.models.model_v3 import MiniTransformerV3
 from src.utils.decorators import timed_execution
 from src.utils.helpers import load_data_splits, set_device
 
@@ -31,7 +31,7 @@ class ModelEvaluator:
         self.model_configs = model_config
         self.train_configs = train_config
         if model_checkpoint_path is not None:
-            self.model = MiniTransformerV2(**self.model_configs).to(self.device)
+            self.model = MiniTransformerV3(**self.model_configs).to(self.device)
             self.model.load_state_dict(
                 torch.load(
                     model_checkpoint_path,
