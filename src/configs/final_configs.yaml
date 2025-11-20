@@ -1,0 +1,16 @@
+model:
+  vocab_size: 27
+  d_model: 512
+  n_heads: 8
+  d_ff: 512
+  n_layers: 6
+  max_len: 128
+  drop: 0.5
+train:
+  experiment_name: "final"
+  epochs: 3
+  lr: 0.00003
+  batch_size: 64
+  save_strategy: "steps"
+  save_steps: 2500
+  scheduler: "cosine"
