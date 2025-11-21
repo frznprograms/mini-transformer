@@ -88,40 +88,22 @@ class ModelEvaluator:
 
 
 if __name__ == "__main__":
-    ## [testing] loading all_configs file
-    config_path = "src/configs/base_configs.yaml"
+    config_path = "src/configs/final_configs.yaml"
     with open(config_path, "r") as f:
         configs = yaml.safe_load(f)
 
     model_config = configs["model"]
     train_config = configs["train"]
 
-    # with open("data/text8", "r") as f:
-    #     full_text = f.read()
-
-    # test_slice_text = full_text[:10000]
-    # logger.info(f"Loaded test slice with {len(test_slice_text)} characters.")
-
-    train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+    train, val, test, encoded = load_data_splits(path="data/medium/medium_data.pt")
 
     logger.info("Loaded pre-segmented test dataset.")
 
     me = ModelEvaluator(
-        model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",
+        model_checkpoint_path="checkpoints/final/checkpoint-5000/model.pt",
         model_config=model_config,
         train_config=train_config,
-        device="cpu",
+        device="auto",
     )
 
     me.eval(dataset=test)
-
-    # max_size = 50000
-    # data = full_text[max_size : max_size + 10000]
-
-    # train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
-    # me = ModelEvaluator(
-    #     model_checkpoint_path="checkpoints/base_model/checkpoint-FINAL/model.pt",
-    #     model_config_path="src/configs/base_configs.yaml",
-    #     device="cpu",
-    # )
-    # me.eval(dataset=test)
