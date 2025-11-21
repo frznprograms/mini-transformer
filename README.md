@@ -1,5 +1,5 @@
-<h1 style="text-align: center;">in-shane-ity AI</h1>
-<h3 style="text-align: center;"> Mini Transformer for Next Word Prediction </h3>
+<div align="center">src="title.png", alt="title pic", width="350"></div>
+<h3 align="center"> Mini Transformer for Next Word Prediction </h3>
 
 #### Description
 
@@ -9,9 +9,9 @@ We conducted a series of experiments in an attempt to maximise the performance o
 
 #### Results
 
-| Model Name/Checkpoint | Configurations | Accuracy |
-| --------------------- | -------------- | -------- |
-| Item1                 | Item1          | Item1    |
+| Model Name/Checkpoint             | Configurations                     | Accuracy |
+| --------------------------------- | ---------------------------------- | -------- |
+| checkpoints/final/checkpoint-5000 | See src/configs/final_configs.yaml | 0.5536   |
 
 #### Authors
 
@@ -46,21 +46,42 @@ And if you would still prefer to use the original `pip` or `pip3` package manage
 pip install -r requirements.txt
 ```
 
-TODO: update requirements.txt once project is done
-
 **Note: All our imports are absolute to avoid strange import errors in Python, and all scripts are run as modules in testing using the `-m` flag. We recommend you do the same.**
+
+#### Running Inference
+
+To use our best model and reproduce the accuracy result, simply run this in command line:
+
+```{bash}
+uv run -m src.models.eval
+```
 
 ### Reproducing Experiments
 
 To reproduce our best-performing experiment, execute the following:
 
-TODO: add required code for these sections
-
 ```{bash}
-some_code wow
+from src.models.grid_search import GridSearchManager
+from src.utils.helpers import load_data_splits
+
+logger.info("Loading data for Grid Search Test...")
+train, val, test, encoded = load_data_splits(path="data/small/small_data.pt")
+logger.success("Loaded training and validation datasets.")
+
+config_file_path = "src/configs/experiments_shane.yaml"
+# config_file_path = "src/configs/experiments_shayne.yaml" can be used too
+
+search_manager = GridSearchManager(
+    config_path=config_file_path, device="auto", seed=42
+)
+
+logger.info(f"Starting Grid Search test from {config_file_path}")
+search_manager.run(train, val)
+
+logger.success("Grid Search test complete")
 ```
 
-Do note that the above code will run a full **grid search** on the stated hyper-parameters and may time a while to run, depending on your hardware. If you do not have a GPU on your device, we recommend using Google Colab, Kaggle or other free compute resources.
+Do note that the above code will run a full **grid search** on the stated hyper-parameters and may time a while to run, depending on your hardware. If you do not have a GPU on your device, we recommend using Google Colab, Kaggle or other free compute resources. Please also do not run a full grid search unless absolutely needed.
 
 For those who wish to train a model using our architecture text8 dataset, we have made data preparation and model hyper-parameters easily customisable, however you will need to configure this yourself, and we cannot guarantee high performance off-the-shelf. You may need to run several experiments with different configurations before you achieve strong performance.
 
@@ -126,7 +147,7 @@ train:
   save_steps: 2500
 ```
 
-Once done, you can move on to training the model on your prepared dataset. Note that here we only provide the basic parameters. Please refer to the source code <insert link here> for more details and other ways to customise training:
+Once done, you can move on to training the model on your prepared dataset. Note that here we only provide the basic parameters. Please refer to the source code <https://github.com/frznprograms/mini-transformer/blob/main/src/models/training.py> for more details and other ways to customise training:
 
 ```{python}
 from src.models.training import ModelTrainer
