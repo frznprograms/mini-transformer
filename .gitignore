@@ -8,3 +8,4 @@
 # pycache rubbish
 *.pyc
 *__pycache__
+logs

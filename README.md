@@ -1,4 +1,4 @@
-<div align="center">src="title.png", alt="title pic", width="350"></div>
+<div align="center"><img src="title.png" alt="title pic" width="350" /></div>
 <h3 align="center"> Mini Transformer for Next Word Prediction </h3>
 
 #### Description
